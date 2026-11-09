@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The International Inside Report — News Desk</title>
+<meta name="description" content="Live headlines from newspapers, portals and TV channels around the world.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#14202e">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Inside Report">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=Noto+Sans+Bengali:wght@400;500;600&family=Noto+Serif+Bengali:wght@500;600&display=swap">
+<style>
+/* Layout: a single wire-desk column. Time | outlet | headline, newest first.
+   A Bangla | English switch sits top right. */
+:root {
+  --bg: #f3f5f8;
+  --panel: #ffffff;
+  --ink: #14202e;
+  --muted: #5a6877;
+  --rule: #d8dee6;
+  --accent: #1d4f91;
+  --accent-ink: #ffffff;
+  --live: #c8321e;
+  --warn-bg: #fff3d6;
+  --warn-ink: #6b4a00;
+  --focus: #1d4f91;
+  --serif: "IBM Plex Serif", "Noto Serif Bengali", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", "Noto Sans Bengali", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", "Noto Sans Bengali", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1620;
+    --panel: #15202d;
+    --ink: #e7edf4;
+    --muted: #9aa8b8;
+    --rule: #263444;
+    --accent: #6aa6ec;
+    --accent-ink: #0e1620;
+    --live: #ff6a52;
+    --warn-bg: #3a2f10;
+    --warn-ink: #f2d58a;
+    --focus: #6aa6ec;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1620;
+  --panel: #15202d;
+  --ink: #e7edf4;
+  --muted: #9aa8b8;
+  --rule: #263444;
+  --accent: #6aa6ec;
+  --accent-ink: #0e1620;
+  --live: #ff6a52;
+  --warn-bg: #3a2f10;
+  --warn-ink: #f2d58a;
+  --focus: #6aa6ec;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.55 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 40px;
+}
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 16px; }
+
+.topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.kicker { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.lang { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--panel); }
+.lang button { border: 0; border-radius: 0; min-height: 38px; padding: 6px 16px; background: transparent; font-weight: 500; }
+.lang button + button { border-left: 1px solid var(--rule); }
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+header { display: grid; gap: 4px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+h1 { margin: 0; font: 600 clamp(24px, 5vw, 38px)/1.2 var(--serif); text-wrap: balance; }
+.slogan { margin: 0; color: var(--muted); font-size: 14px; }
+
+.status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font: 400 13px/1.5 var(--mono); color: var(--muted); }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--live); display: inline-block; margin-right: 6px; }
+.dot.on { animation: pulse 2.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .dot.on { animation: none; } }
+.status .spacer { flex: 1 1 0; }
+
+button, input, select { font: inherit; color: inherit; }
+button, select {
+  border: 1px solid var(--rule); background: var(--panel); border-radius: 6px;
+  padding: 7px 12px; cursor: pointer; min-height: 38px;
+}
+button:hover:not([aria-pressed="true"]), select:hover { border-color: var(--accent); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.controls { display: grid; gap: 10px; }
+.search-row { display: flex; flex-wrap: wrap; gap: 8px; }
+input[type="search"] {
+  flex: 1 1 220px; min-width: 0; min-height: 40px; padding: 8px 12px;
+  border: 1px solid var(--rule); border-radius: 6px; background: var(--panel);
+}
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border-radius: 999px; padding: 5px 12px; font-size: 14px; min-height: 34px; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+.notice { background: var(--warn-bg); color: var(--warn-ink); padding: 10px 14px; border-radius: 6px; font-size: 14px; }
+
+.feed { list-style: none; margin: 0; padding: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; }
+.day { padding: 8px 16px; font: 500 12px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--bg); border-top: 1px solid var(--rule); }
+.day:first-child { border-top: 0; border-radius: 8px 8px 0 0; }
+.row { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 2px 14px; padding: 12px 16px; border-top: 1px solid var(--rule); }
+.day + .row { border-top: 0; }
+.time { font: 400 13px/1.6 var(--mono); color: var(--muted); grid-row: span 2; }
+.meta { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); font-weight: 600; min-width: 0; }
+.meta span { color: var(--muted); font-weight: 400; }
+.headline { min-width: 0; font: 500 17px/1.4 var(--serif); }
+.headline a { color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.headline a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.headline a:visited { color: var(--muted); }
+.empty { padding: 28px 16px; color: var(--muted); }
+
+.sources { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 16px; font-size: 14px; }
+.sources summary { cursor: pointer; font-weight: 600; }
+.sources ul { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 16px; }
+.sources li { display: flex; justify-content: space-between; gap: 8px; min-width: 0; }
+.sources .bad { color: var(--live); }
+.sources .n { font-family: var(--mono); color: var(--muted); }
+
+footer { color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+
+/* Bangla joins letters into shapes, so no tracking and no capitals there */
+html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-spacing: 0; text-transform: none; }
+
+@media (max-width: 520px) {
+  .row { grid-template-columns: 1fr; }
+  .time { grid-row: auto; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="kicker" data-i18n="kicker">News Desk · Live Wire</div>
+    <div class="lang" role="group" aria-label="Language / ভাষা">
+      <button type="button" data-lang="bn" lang="bn">বাংলা</button>
+      <button type="button" data-lang="en" lang="en">English</button>
+    </div>
+  </div>
+
+  <header>
+    <h1>The International Inside Report</h1>
+    <p class="slogan" data-i18n="slogan">Truth · Justice · Transparency · Public Interest</p>
+  </header>
+
+  <div class="status" role="status" aria-live="polite">
+    <span><span class="dot" id="dot"></span><span id="updated"></span></span>
+    <span id="counts"></span>
+    <span class="spacer"></span>
+    <button id="install" type="button" data-i18n="install" hidden>Install app</button>
+    <button id="refresh" type="button" data-i18n="refresh">Refresh now</button>
+    <button id="theme" type="button" data-i18n="theme">Theme</button>
+  </div>
+
+  <div id="notice" class="notice" hidden></div>
+
+  <div class="controls">
+    <div class="search-row">
+      <input id="q" type="search" data-i18n-ph="search" data-i18n-aria="searchAria">
+      <select id="src" data-i18n-aria="srcAria"><option value=""></option></select>
+    </div>
+    <div class="chips" id="regions" role="group" data-i18n-aria="regionAria"></div>
+  </div>
+
+  <ul class="feed" id="feed"></ul>
+
+  <details class="sources">
+    <summary id="sources-title"></summary>
+    <ul id="sources"></ul>
+  </details>
+
+  <footer>
+    <span data-i18n="foot1">Headlines and links only. Open the outlet to read the full story.</span>
+    <span data-i18n="foot2">An outlet's report is a lead, not a confirmed fact. Verify before you republish.</span>
+    <span data-i18n="foot3">Headlines appear in each outlet's own language.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var REFRESH_MS = 5 * 60 * 1000;
+  var STALE_MS = 3 * 60 * 60 * 1000;
+
+  var STR = {
+    en: {
+      kicker: "News Desk · Live Wire",
+      slogan: "Truth · Justice · Transparency · Public Interest",
+      refresh: "Refresh now", theme: "Theme", install: "Install app",
+      search: "Search headlines, e.g. election, flood, sanctions",
+      searchAria: "Search headlines", srcAria: "Filter by outlet", regionAria: "Filter by region",
+      allOutlets: "All outlets", all: "All",
+      loading: "Loading…",
+      updated: "Updated {x}",
+      one: "{n} headline", many: "{n} headlines",
+      empty: "No headlines match. Clear the search or choose All.",
+      outlets: "Outlets ({live} of {total} live)", offline: "offline",
+      foot1: "Headlines and links only. Open the outlet to read the full story.",
+      foot2: "An outlet's report is a lead, not a confirmed fact. Verify before you republish.",
+      foot3: "Headlines appear in each outlet's own language.",
+      stale: "The feed has not updated for {x}. Check the update schedule in your GitHub repository.",
+      failKeep: "Could not refresh, showing the last copy",
+      noFile: "No news file yet. Run the update once.",
+      now: "just now", ago: "{x} ago", min: "{n} min", hour: "{n} h", day: "{n} d",
+      today: "Today", yesterday: "Yesterday"
+    },
+    bn: {
+      kicker: "নিউজ ডেস্ক · সরাসরি",
+      slogan: "সত্য · ন্যায়বিচার · স্বচ্ছতা · জনস্বার্থ",
+      refresh: "এখনই হালনাগাদ করুন", theme: "থিম", install: "অ্যাপ ইনস্টল করুন",
+      search: "শিরোনাম খুঁজুন, যেমন নির্বাচন, বন্যা, নিষেধাজ্ঞা",
+      searchAria: "শিরোনাম খুঁজুন", srcAria: "আউটলেট অনুযায়ী ছাঁকুন", regionAria: "অঞ্চল অনুযায়ী ছাঁকুন",
+      allOutlets: "সব আউটলেট", all: "সব",
+      loading: "লোড হচ্ছে…",
+      updated: "হালনাগাদ: {x}",
+      one: "{n}টি শিরোনাম", many: "{n}টি শিরোনাম",
+      empty: "কোনো শিরোনাম মেলেনি। অনুসন্ধান মুছুন বা “সব” বেছে নিন।",
+      outlets: "আউটলেট ({total}টির মধ্যে {live}টি চালু)", offline: "বন্ধ",
+      foot1: "শুধু শিরোনাম ও লিংক। পুরো খবর পড়তে মূল আউটলেটে যান।",
+      foot2: "কোনো আউটলেটের খবর একটি সূত্র, নিশ্চিত তথ্য নয়। পুনঃপ্রকাশের আগে যাচাই করুন।",
+      foot3: "শিরোনাম প্রতিটি আউটলেটের নিজস্ব ভাষায় দেখানো হয়।",
+      stale: "{x} ধরে হালনাগাদ হয়নি। GitHub রিপোজিটরিতে হালনাগাদের সময়সূচি দেখুন।",
+      failKeep: "হালনাগাদ করা যায়নি, শেষ কপি দেখানো হচ্ছে",
+      noFile: "এখনও কোনো সংবাদ ফাইল নেই। একবার হালনাগাদ চালান।",
+      now: "এইমাত্র", ago: "{x} আগে", min: "{n} মিনিট", hour: "{n} ঘণ্টা", day: "{n} দিন",
+      today: "আজ", yesterday: "গতকাল"
+    }
+  };
+  var REGION_BN = {
+    "Global": "বিশ্ব", "Europe": "ইউরোপ", "Americas": "আমেরিকা", "Middle East": "মধ্যপ্রাচ্য",
+    "Africa": "আফ্রিকা", "South Asia": "দক্ষিণ এশিয়া", "Asia-Pacific": "এশিয়া-প্রশান্ত", "Our channel": "আমাদের চ্যানেল"
+  };
+  var TYPE_BN = {
+    "TV / Portal": "টিভি / পোর্টাল", "Newspaper": "সংবাদপত্র", "Portal": "পোর্টাল",
+    "Radio / Portal": "রেডিও / পোর্টাল", "Own channel": "নিজস্ব চ্যানেল"
+  };
+
+  var state = { data: null, region: "All", source: "", query: "", lang: "en", loadState: "loading" };
+  var el = {
+    updated: document.getElementById("updated"), counts: document.getElementById("counts"),
+    dot: document.getElementById("dot"), notice: document.getElementById("notice"),
+    q: document.getElementById("q"), src: document.getElementById("src"),
+    regions: document.getElementById("regions"), feed: document.getElementById("feed"),
+    sources: document.getElementById("sources"), sourcesTitle: document.getElementById("sources-title"),
+    refresh: document.getElementById("refresh"), theme: document.getElementById("theme")
+  };
+
+  function store(key, value) {
+    try { if (value === undefined) { return localStorage.getItem(key); } localStorage.setItem(key, value); } catch (e) { return null; }
+  }
+  function t(key, vars) {
+    var s = (STR[state.lang] && STR[state.lang][key]) || STR.en[key] || key;
+    if (vars) { Object.keys(vars).forEach(function (k) { s = s.split("{" + k + "}").join(vars[k]); }); }
+    return s;
+  }
+  function locale() { return state.lang === "bn" ? "bn-BD" : "en-GB"; }
+  function num(n) { return Number(n).toLocaleString(locale()); }
+  function regionName(r) { return state.lang === "bn" ? (REGION_BN[r] || r) : r; }
+  function typeName(y) { return state.lang === "bn" ? (TYPE_BN[y] || y) : y; }
+
+  function dur(ms) {
+    var m = Math.round(ms / 60000);
+    if (m < 60) return t("min", { n: num(m) });
+    var h = Math.floor(m / 60);
+    if (h < 24) return t("hour", { n: num(h) });
+    return t("day", { n: num(Math.floor(h / 24)) });
+  }
+  function ago(ms) {
+    if (Math.round(ms / 60000) < 1) return t("now");
+    return t("ago", { x: dur(ms) });
+  }
+
+  function safeUrl(u) { return /^https?:\/\//i.test(u) ? u : "#"; }
+
+  function dayLabel(d) {
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var that = new Date(d); that.setHours(0, 0, 0, 0);
+    var diff = Math.round((today - that) / 86400000);
+    if (diff === 0) return t("today");
+    if (diff === 1) return t("yesterday");
+    return that.toLocaleDateString(locale(), { weekday: "long", day: "numeric", month: "short" });
+  }
+
+  function applyStatic() {
+    document.documentElement.lang = state.lang;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function (n) { n.textContent = t(n.getAttribute("data-i18n")); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-ph]"), function (n) { n.placeholder = t(n.getAttribute("data-i18n-ph")); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-aria]"), function (n) { n.setAttribute("aria-label", t(n.getAttribute("data-i18n-aria"))); });
+    Array.prototype.forEach.call(document.querySelectorAll(".lang button"), function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === state.lang));
+    });
+  }
+
+  function renderChips() {
+    var regions = ["All"];
+    state.data.sources.forEach(function (s) { if (regions.indexOf(s.region) < 0) regions.push(s.region); });
+    if (regions.indexOf(state.region) < 0) state.region = "All";
+    el.regions.textContent = "";
+    regions.forEach(function (r) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "chip"; b.setAttribute("data-region", r);
+      b.textContent = r === "All" ? t("all") : regionName(r);
+      b.setAttribute("aria-pressed", String(r === state.region));
+      b.addEventListener("click", function () { state.region = r; store("iir-region", r); render(); });
+      el.regions.appendChild(b);
+    });
+  }
+
+  function renderSources() {
+    var current = state.source;
+    el.src.textContent = "";
+    var all = document.createElement("option"); all.value = ""; all.textContent = t("allOutlets"); el.src.appendChild(all);
+    el.sources.textContent = "";
+    var live = 0;
+    state.data.sources.forEach(function (s) {
+      if (s.ok) live++;
+      var o = document.createElement("option"); o.value = s.name; o.textContent = s.name; el.src.appendChild(o);
+      var li = document.createElement("li");
+      var name = document.createElement("span"); name.textContent = s.name; if (!s.ok) name.className = "bad";
+      var n = document.createElement("span"); n.className = "n"; n.textContent = s.ok ? num(s.count) : t("offline");
+      if (!s.ok && s.error) li.title = s.error;
+      li.appendChild(name); li.appendChild(n); el.sources.appendChild(li);
+    });
+    el.src.value = current;
+    el.sourcesTitle.textContent = t("outlets", { live: num(live), total: num(state.data.sources.length) });
+  }
+
+  function render() {
+    if (!state.data) return;
+    var q = state.query.trim().toLowerCase();
+    var items = state.data.items.filter(function (i) {
+      if (state.region !== "All" && i.r !== state.region) return false;
+      if (state.source && i.s !== state.source) return false;
+      if (q && (i.t + " " + i.s).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    Array.prototype.forEach.call(el.regions.children, function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-region") === state.region));
+    });
+    el.feed.textContent = "";
+    if (!items.length) {
+      var e = document.createElement("li"); e.className = "empty"; e.textContent = t("empty");
+      el.feed.appendChild(e); el.counts.textContent = t("many", { n: num(0) }); return;
+    }
+    var lastDay = "";
+    items.slice(0, 300).forEach(function (i) {
+      var d = new Date(i.d);
+      var label = dayLabel(d);
+      if (label !== lastDay) {
+        var h = document.createElement("li"); h.className = "day"; h.textContent = label; el.feed.appendChild(h); lastDay = label;
+      }
+      var li = document.createElement("li"); li.className = "row";
+      var tm = document.createElement("div"); tm.className = "time";
+      tm.textContent = d.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit", hour12: false });
+      var meta = document.createElement("div"); meta.className = "meta";
+      meta.appendChild(document.createTextNode(i.s + " "));
+      var sp = document.createElement("span"); sp.textContent = "· " + typeName(i.y); meta.appendChild(sp);
+      var hd = document.createElement("div"); hd.className = "headline";
+      var a = document.createElement("a"); a.href = safeUrl(i.u); a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = i.t;
+      hd.appendChild(a);
+      li.appendChild(tm); li.appendChild(meta); li.appendChild(hd); el.feed.appendChild(li);
+    });
+    el.counts.textContent = t(items.length === 1 ? "one" : "many", { n: num(items.length) });
+  }
+
+  function status() {
+    if (state.data) {
+      var age = Date.now() - new Date(state.data.updated).getTime();
+      el.updated.textContent = t("updated", { x: ago(age) });
+      el.dot.className = age < STALE_MS ? "dot on" : "dot";
+      if (age >= STALE_MS) {
+        el.notice.hidden = false;
+        el.notice.textContent = t("stale", { x: dur(age) });
+      } else { el.notice.hidden = true; }
+      if (state.loadState === "failed") { el.updated.textContent = t("failKeep"); }
+    } else if (state.loadState === "failed") {
+      el.updated.textContent = t("noFile");
+    } else {
+      el.updated.textContent = t("loading");
+    }
+  }
+
+  function repaint() {
+    applyStatic();
+    if (state.data) { renderChips(); renderSources(); render(); }
+    status();
+  }
+
+  function load() {
+    el.refresh.disabled = true;
+    return fetch("news.json?ts=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (data) { state.data = data; state.loadState = "ok"; repaint(); })
+      .catch(function () { state.loadState = "failed"; status(); })
+      .then(function () { el.refresh.disabled = false; });
+  }
+
+  function setLang(l) {
+    state.lang = l === "bn" ? "bn" : "en";
+    store("iir-lang", state.lang);
+    repaint();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".lang button"), function (b) {
+    b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+  });
+  el.q.addEventListener("input", function () { state.query = el.q.value; render(); });
+  el.src.addEventListener("change", function () { state.source = el.src.value; render(); });
+  el.refresh.addEventListener("click", load);
+  el.theme.addEventListener("click", function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute("data-theme") === "dark" ||
+      (!root.getAttribute("data-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next); store("iir-theme", next);
+  });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) load(); });
+
+  var savedTheme = store("iir-theme"); if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme);
+  var savedRegion = store("iir-region"); if (savedRegion) state.region = savedRegion;
+  var savedLang = store("iir-lang");
+  state.lang = savedLang === "bn" || savedLang === "en" ? savedLang : ((navigator.language || "").toLowerCase().indexOf("bn") === 0 ? "bn" : "en");
+
+  // Installable app: Chrome offers its own install prompt; this button opens it on demand.
+  var installEvent = null;
+  var installBtn = document.getElementById("install");
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault(); installEvent = e; installBtn.hidden = false;
+  });
+  window.addEventListener("appinstalled", function () { installEvent = null; installBtn.hidden = true; });
+  installBtn.addEventListener("click", function () {
+    if (!installEvent) return;
+    installEvent.prompt();
+    installEvent.userChoice.then(function () { installEvent = null; installBtn.hidden = true; });
+  });
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  }
+
+  repaint();
+  load();
+  setInterval(load, REFRESH_MS);
+  setInterval(status, 30000);
+})();
+</script>
+</body>
+</html>
