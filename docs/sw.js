@@ -1,7 +1,7 @@
 /* Offline support for the News Desk app.
    The page itself is cached so the app opens without a connection.
    news.json is always fetched fresh first; the last copy is used only when offline. */
-const CACHE = "iir-shell-v2";
+const CACHE = "iir-shell-v10";
 const SHELL = ["./", "index.html", "post.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 const NEWS_KEY = "news.json";
 

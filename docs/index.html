@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The International Inside Report — News Desk</title>
+<title>The Inside Report BD — News Desk</title>
 <meta name="description" content="Live headlines from newspapers, portals and TV channels around the world.">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#14202e">
@@ -81,8 +81,8 @@ body {
 
 .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .kicker { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-.lang { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--panel); }
-.lang button { border: 0; border-radius: 0; min-height: 38px; padding: 6px 16px; background: transparent; font-weight: 500; }
+.lang { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.lang button { border: 0; border-radius: 0; min-height: 26px; padding: 2px 10px; font-size: 13px; line-height: 1.2; background: transparent; font-weight: 500; }
 .lang button + button { border-left: 1px solid var(--rule); }
 .lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 
@@ -115,6 +115,30 @@ input[type="search"] {
 .chip { border-radius: 999px; padding: 5px 12px; font-size: 14px; min-height: 34px; }
 .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 
+
+
+.brk { border:2px solid var(--live); border-radius:8px; background:var(--panel); overflow:hidden; }
+.brk h2 { margin:0; background:var(--live); color:#fff; font:700 14px/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; padding:10px 14px; }
+.brk ul { list-style:none; margin:0; padding:0; }
+.brk li { display:grid; grid-template-columns:84px minmax(0,1fr); gap:12px; padding:12px 14px; border-top:1px solid var(--rule); align-items:start; }
+.brk li:first-child { border-top:0; }
+.brk img { width:84px; height:56px; object-fit:cover; border-radius:4px; background:#0a2a63; }
+.brk a { color:var(--ink); text-decoration:none; font:600 17px/1.35 var(--serif); }
+.brk a:hover { text-decoration:underline; }
+.brk .m { display:block; margin-top:2px; font:400 12px/1.4 var(--mono); color:var(--muted); }
+.brk li.noimg { grid-template-columns:1fr; }
+.led { display:flex; align-items:stretch; background:#05080d; border:2px solid #1b2431; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 18px rgba(255,176,0,.08); }
+.led-badge { background:#c8321e; color:#fff; font:700 13px/1 var(--mono); letter-spacing:.12em; padding:0 12px; display:flex; align-items:center; text-transform:uppercase; }
+.led-view { flex:1; min-width:0; overflow:hidden; }
+.led-track { display:inline-flex; gap:48px; white-space:nowrap; padding:11px 0; animation:led 120s linear infinite; font:500 16px/1 var(--mono); color:#ffb000; text-shadow:0 0 6px rgba(255,176,0,.65); }
+.led-track a { color:inherit; text-decoration:none; }
+.led-track a::before { content:"●"; font-size:9px; margin-right:12px; vertical-align:middle; }
+.led:hover .led-track { animation-play-state:paused; }
+@keyframes led { to { transform:translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .led-track { animation:none; } }
+.vidbox h2 { margin:0 0 8px; font:600 18px/1.2 var(--serif); }
+.vid { position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; border:1px solid var(--rule); }
+.vid iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
 .notice { background: var(--warn-bg); color: var(--warn-ink); padding: 10px 14px; border-radius: 6px; font-size: 14px; }
 
 .feed { list-style: none; margin: 0; padding: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; }
@@ -160,7 +184,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   </div>
 
   <header>
-    <h1>The International Inside Report</h1>
+    <h1>The Inside Report BD</h1>
     <p class="slogan" data-i18n="slogan">Truth · Justice · Transparency · Public Interest</p>
   </header>
 
@@ -171,7 +195,18 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     <button id="install" type="button" data-i18n="install" hidden>Install app</button>
     <button id="refresh" type="button" data-i18n="refresh">Refresh now</button>
     <button id="theme" type="button" data-i18n="theme">Theme</button>
+    <a href="mailto:theinsidereportbd@gmail.com?subject=News%20tip" id="tiplink" data-i18n="tip" style="padding:7px 12px;border:1px solid var(--live);color:var(--live);border-radius:6px;background:var(--panel);text-decoration:none;min-height:38px;display:inline-flex;align-items:center;font-weight:600">💡 Send a tip</a>
+    <a href="post.html" id="postlink" style="padding:7px 12px;border:1px solid var(--rule);border-radius:6px;background:var(--panel);color:inherit;text-decoration:none;min-height:38px;display:inline-flex;align-items:center">✍️ Post</a>
   </div>
+
+  <section class="brk" id="brk" hidden><h2 data-i18n="brkHead">Breaking news</h2><ul id="brkList"></ul></section>
+
+  <div class="led" id="led" hidden><span class="led-badge" data-i18n="ledLabel">LIVE</span><div class="led-view"><div class="led-track" id="ledTrack"></div></div></div>
+
+  <section class="vidbox">
+    <h2 data-i18n="videoHead">Our latest videos</h2>
+    <div class="vid"><iframe title="YouTube" loading="lazy" src="https://www.youtube.com/embed/videoseries?list=UUrBlP9XzG0B4veVK27HmMzA" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+  </section>
 
   <div id="notice" class="notice" hidden></div>
 
@@ -206,6 +241,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   var STR = {
     en: {
       kicker: "News Desk · Live Wire",
+      ledLabel: "BREAKING NEWS", videoHead: "Our latest videos", tip: "💡 Send a tip", brkHead: "Breaking news",
       slogan: "Truth · Justice · Transparency · Public Interest",
       refresh: "Refresh now", theme: "Theme", install: "Install app",
       search: "Search headlines, e.g. election, flood, sanctions",
@@ -227,6 +263,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     },
     bn: {
       kicker: "নিউজ ডেস্ক · সরাসরি",
+      ledLabel: "ব্রেকিং নিউজ", videoHead: "আমাদের সর্বশেষ ভিডিও", tip: "💡 খবরের সূত্র পাঠান", brkHead: "ব্রেকিং নিউজ",
       slogan: "সত্য · ন্যায়বিচার · স্বচ্ছতা · জনস্বার্থ",
       refresh: "এখনই হালনাগাদ করুন", theme: "থিম", install: "অ্যাপ ইনস্টল করুন",
       search: "শিরোনাম খুঁজুন, যেমন নির্বাচন, বন্যা, নিষেধাজ্ঞা",
@@ -407,11 +444,52 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     status();
   }
 
+  /* Breaking posts from our own blog (label "Breaking"), public feed via JSONP */
+  var BLOG = "https://theinsidereportbd.blogspot.com";
+  function loadBreaking() {
+    var cb = "iirbrk" + Date.now();
+    var sc = document.createElement("script");
+    window[cb] = function (d) {
+      try {
+        var es = (d && d.feed && d.feed.entry) || [];
+        var ul = document.getElementById("brkList"), box = document.getElementById("brk");
+        if (!ul || !box || !es.length) return;
+        ul.innerHTML = "";
+        es.slice(0, 5).forEach(function (e) {
+          var u = ""; (e.link || []).forEach(function (l) { if (l.rel === "alternate") { u = l.href; } });
+          if (!/^https?:\/\//i.test(u)) return;
+          var img = e.media$thumbnail ? e.media$thumbnail.url.replace(/\/s72-c\//, "/w300/") : "";
+          var li = document.createElement("li"); if (!img) li.className = "noimg";
+          if (img) { var im = document.createElement("img"); im.src = img; im.alt = ""; im.loading = "lazy"; li.appendChild(im); }
+          var box2 = document.createElement("div");
+          var a = document.createElement("a"); a.href = u; a.target = "_blank"; a.rel = "noopener"; a.textContent = e.title.$t;
+          var m = document.createElement("span"); m.className = "m";
+          m.textContent = e.published ? new Date(e.published.$t).toLocaleString(locale(), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+          box2.appendChild(a); box2.appendChild(m); li.appendChild(box2); ul.appendChild(li);
+        });
+        box.hidden = !ul.children.length;
+      } finally { delete window[cb]; sc.remove(); }
+    };
+    sc.onerror = function () { delete window[cb]; sc.remove(); };
+    sc.src = BLOG + "/feeds/posts/summary/-/Breaking?alt=json-in-script&max-results=5&callback=" + cb;
+    document.head.appendChild(sc);
+  }
+
+  function ledUpdate() {
+    var box = document.getElementById("led"), tr = document.getElementById("ledTrack");
+    if (!box || !tr || !state.data) return;
+    var items = state.data.items.slice(0, 20); if (!items.length) return;
+    var h = "";
+    items.forEach(function (i) { h += '<a href="' + safeUrl(i.u).replace(/"/g, "&quot;") + '" target="_blank" rel="noopener noreferrer">' + i.s.replace(/</g, "&lt;") + ": " + i.t.replace(/</g, "&lt;") + "</a>"; });
+    tr.innerHTML = h + h; tr.style.animationDuration = Math.max(60, items.length * 8) + "s"; box.hidden = false;
+  }
+
   function load() {
+    loadBreaking();
     el.refresh.disabled = true;
     return fetch("news.json?ts=" + Date.now(), { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (data) { state.data = data; state.loadState = "ok"; repaint(); })
+      .then(function (data) { state.data = data; state.loadState = "ok"; repaint(); ledUpdate(); })
       .catch(function () { state.loadState = "failed"; status(); })
       .then(function () { el.refresh.disabled = false; });
   }
