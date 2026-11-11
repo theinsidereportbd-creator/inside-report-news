@@ -82,7 +82,7 @@ body {
 .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .kicker { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .lang { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--panel); }
-.lang button { border: 0; border-radius: 0; min-height: 26px; padding: 2px 10px; font-size: 13px; line-height: 1.2; background: transparent; font-weight: 500; }
+.lang button { border: 0; border-radius: 0; min-height: 0 !important; height: 22px; padding: 0 8px !important; font-size: 11px !important; line-height: 22px; background: transparent; font-weight: 500; }
 .lang button + button { border-left: 1px solid var(--rule); }
 .lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 
@@ -194,7 +194,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     <span class="spacer"></span>
     <button id="install" type="button" data-i18n="install" hidden>Install app</button>
     <button id="refresh" type="button" data-i18n="refresh">Refresh now</button>
-    <button id="theme" type="button" data-i18n="theme">Theme</button>
+    <button id="theme" type="button" aria-label="Dark / Light">☀️ Light</button>
     <a href="mailto:theinsidereportbd@gmail.com?subject=News%20tip" id="tiplink" data-i18n="tip" style="padding:7px 12px;border:1px solid var(--live);color:var(--live);border-radius:6px;background:var(--panel);text-decoration:none;min-height:38px;display:inline-flex;align-items:center;font-weight:600">💡 Send a tip</a>
     <a href="post.html" id="postlink" style="padding:7px 12px;border:1px solid var(--rule);border-radius:6px;background:var(--panel);color:inherit;text-decoration:none;min-height:38px;display:inline-flex;align-items:center">✍️ Post</a>
   </div>
@@ -205,7 +205,8 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
 
   <section class="vidbox">
     <h2 data-i18n="videoHead">Our latest videos</h2>
-    <div class="vid"><iframe title="YouTube" loading="lazy" src="https://www.youtube.com/embed/videoseries?list=UUrBlP9XzG0B4veVK27HmMzA" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="vid"><iframe id="vidFrame" title="YouTube" loading="lazy" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <p style="margin:8px 0 0"><a href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener" style="color:inherit;font-weight:600">▶ YouTube-এ দেখুন / Watch on YouTube ↗</a></p>
   </section>
 
   <div id="notice" class="notice" hidden></div>
@@ -489,7 +490,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     el.refresh.disabled = true;
     return fetch("news.json?ts=" + Date.now(), { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (data) { state.data = data; state.loadState = "ok"; repaint(); ledUpdate(); })
+      .then(function (data) { state.data = data; state.loadState = "ok"; repaint(); ledUpdate(); loadVideo(); })
       .catch(function () { state.loadState = "failed"; status(); })
       .then(function () { el.refresh.disabled = false; });
   }
@@ -506,16 +507,36 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   el.q.addEventListener("input", function () { state.query = el.q.value; render(); });
   el.src.addEventListener("change", function () { state.source = el.src.value; render(); });
   el.refresh.addEventListener("click", load);
+
+  function loadVideo() {
+    var f = document.getElementById("vidFrame"); if (!f || f.getAttribute("data-set")) return;
+    var id = "";
+    if (state.data) {
+      state.data.items.some(function (i) {
+        if ((i.s || "").indexOf("The Inside Report BD") === 0) {
+          var m = /[?&]v=([\w-]{11})/.exec(i.u || "") || /youtu\.be\/([\w-]{11})/.exec(i.u || "");
+          if (m) { id = m[1]; return true; }
+        }
+        return false;
+      });
+    }
+    f.setAttribute("data-set", "1");
+    f.src = id ? "https://www.youtube-nocookie.com/embed/" + id + "?rel=0"
+              : "https://www.youtube-nocookie.com/embed/videoseries?list=UUrBlP9XzG0B4veVK27HmMzA";
+  }
+  function applyTheme(mode) {
+    document.documentElement.setAttribute("data-theme", mode);
+    store("iir-theme", mode);
+    el.theme.textContent = mode === "dark" ? "☀️ Light" : "🌙 Dark";
+    var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", mode === "dark" ? "#0e1620" : "#14202e");
+  }
   el.theme.addEventListener("click", function () {
-    var root = document.documentElement;
-    var dark = root.getAttribute("data-theme") === "dark" ||
-      (!root.getAttribute("data-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    var next = dark ? "light" : "dark";
-    root.setAttribute("data-theme", next); store("iir-theme", next);
+    applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
   });
   document.addEventListener("visibilitychange", function () { if (!document.hidden) load(); });
 
-  var savedTheme = store("iir-theme"); if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme);
+  var savedTheme = store("iir-theme"); applyTheme(savedTheme === "light" ? "light" : "dark");
+  setTimeout(loadVideo, 4000);
   var savedRegion = store("iir-region"); if (savedRegion) state.region = savedRegion;
   var savedLang = store("iir-lang");
   state.lang = savedLang === "bn" || savedLang === "en" ? savedLang : ((navigator.language || "").toLowerCase().indexOf("bn") === 0 ? "bn" : "en");
