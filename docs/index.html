@@ -479,10 +479,18 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   function ledUpdate() {
     var box = document.getElementById("led"), tr = document.getElementById("ledTrack");
     if (!box || !tr || !state.data) return;
-    var items = state.data.items.slice(0, 20); if (!items.length) return;
+    var by = {}, order = [];
+    state.data.items.slice(0, 400).forEach(function (i) {
+      if (!by[i.s]) { by[i.s] = []; order.push(i.s); }
+      if (by[i.s].length < 2) by[i.s].push(i);
+    });
+    order.sort(function (a, b) { return (b.indexOf("The Inside Report BD") === 0) - (a.indexOf("The Inside Report BD") === 0); });
+    var items = [];
+    for (var round = 0; round < 2; round++) { order.forEach(function (n) { if (by[n][round]) items.push(by[n][round]); }); }
+    items = items.slice(0, 40); if (!items.length) return;
     var h = "";
     items.forEach(function (i) { h += '<a href="' + safeUrl(i.u).replace(/"/g, "&quot;") + '" target="_blank" rel="noopener noreferrer">' + i.s.replace(/</g, "&lt;") + ": " + i.t.replace(/</g, "&lt;") + "</a>"; });
-    tr.innerHTML = h + h; tr.style.animationDuration = Math.max(60, items.length * 8) + "s"; box.hidden = false;
+    tr.innerHTML = h + h; tr.style.animationDuration = Math.max(80, items.length * 9) + "s"; box.hidden = false;
   }
 
   function load() {
