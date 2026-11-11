@@ -206,6 +206,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   <section class="vidbox">
     <h2 data-i18n="videoHead">Our latest videos</h2>
     <div class="vid"><div id="vidHost"></div></div>
+    <p id="vidCap" style="margin:8px 0 0;font-weight:600"></p><div id="vidStrip" style="display:flex;gap:10px;overflow-x:auto;margin-top:8px"></div>
     <p style="margin:8px 0 0"><a href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener" style="color:inherit;font-weight:600">▶ YouTube-এ দেখুন / Watch on YouTube ↗</a></p>
   </section>
 
@@ -516,35 +517,31 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   el.src.addEventListener("change", function () { state.source = el.src.value; render(); });
   el.refresh.addEventListener("click", load);
 
-  var vidIds = [], vidPos = 0, vidPlayer = null, vidStarted = false;
-  function vidNext() {
-    if (vidPos >= vidIds.length) {
-      var h = document.getElementById("vidHost");
-      if (h) { h.outerHTML = '<a id="vidHost" href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;text-decoration:none">▶ YouTube-এ ভিডিও দেখুন</a>'; }
-      return;
-    }
-    var id = vidIds[vidPos++];
-    if (vidPlayer && vidPlayer.loadVideoById) { vidPlayer.loadVideoById(id); return; }
-    vidPlayer = new YT.Player("vidHost", {
-      videoId: id, width: "100%", height: "100%",
-      playerVars: { rel: 0, playsinline: 1 },
-      events: { onError: function () { vidNext(); } }
-    });
-  }
   function loadVideo() {
-    if (vidStarted) return; vidStarted = true;
-    if (state.data) {
-      state.data.items.forEach(function (i) {
-        if ((i.s || "").indexOf("The Inside Report BD") === 0) {
-          var m = /[?&]v=([\w-]{11})/.exec(i.u || "") || /youtu\.be\/([\w-]{11})/.exec(i.u || "");
-          if (m && vidIds.indexOf(m[1]) < 0 && vidIds.length < 10) vidIds.push(m[1]);
-        }
-      });
+    var host = document.getElementById("vidHost"); if (!host || !state.data) return;
+    var vids = [];
+    state.data.items.forEach(function (i) {
+      if ((i.s || "").indexOf("The Inside Report BD") !== 0) return;
+      var m = /[?&]v=([\w-]{11})/.exec(i.u || "") || /(?:youtu\.be\/|shorts\/)([\w-]{11})/.exec(i.u || "");
+      if (m && !vids.some(function (v) { return v.id === m[1]; }) && vids.length < 6) vids.push({ id: m[1], t: i.t || "", u: i.u });
+    });
+    if (!vids.length) return;
+    var box = host.parentNode;
+    function esc(x) { return String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
+    function feature(v) {
+      box.innerHTML = '<div id="vidHost" style="position:absolute;inset:0;background:#000 url(https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg) center/contain no-repeat;cursor:pointer"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;background:rgba(200,50,30,.92);display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;padding-left:5px">&#9654;</span></div>';
+      box.firstChild.onclick = function () {
+        box.innerHTML = '<iframe title="YouTube" src="https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>';
+      };
+      var cap = document.getElementById("vidCap"); if (cap) cap.textContent = v.t;
     }
-    if (!vidIds.length) { vidIds.push("none00000000"); }
-    var sc = document.createElement("script"); sc.src = "https://www.youtube.com/iframe_api";
-    window.onYouTubeIframeAPIReady = vidNext;
-    document.head.appendChild(sc);
+    feature(vids[0]);
+    var strip = document.getElementById("vidStrip");
+    if (strip && vids.length > 1) {
+      strip.innerHTML = vids.slice(1).map(function (v, n) {
+        return '<a href="' + esc(v.u) + '" target="_blank" rel="noopener" style="flex:none;width:130px;text-decoration:none;color:inherit"><div style="height:74px;background:#000 url(https://i.ytimg.com/vi/' + v.id + '/mqdefault.jpg) center/cover;border-radius:6px"></div><div style="font-size:12px;line-height:1.3;margin-top:4px;max-height:32px;overflow:hidden">' + esc(v.t) + '</div></a>';
+      }).join("");
+    }
   }
   function applyTheme(mode) {
     document.documentElement.setAttribute("data-theme", mode);
@@ -558,7 +555,6 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   document.addEventListener("visibilitychange", function () { if (!document.hidden) load(); });
 
   var savedTheme = store("iir-theme"); applyTheme(savedTheme === "light" ? "light" : "dark");
-  setTimeout(loadVideo, 4000);
   var savedRegion = store("iir-region"); if (savedRegion) state.region = savedRegion;
   var savedLang = store("iir-lang");
   state.lang = savedLang === "bn" || savedLang === "en" ? savedLang : ((navigator.language || "").toLowerCase().indexOf("bn") === 0 ? "bn" : "en");
