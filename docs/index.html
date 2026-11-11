@@ -127,10 +127,10 @@ input[type="search"] {
 .brk a:hover { text-decoration:underline; }
 .brk .m { display:block; margin-top:2px; font:400 12px/1.4 var(--mono); color:var(--muted); }
 .brk li.noimg { grid-template-columns:1fr; }
-.led { display:flex; align-items:stretch; background:#05080d; border:2px solid #1b2431; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 18px rgba(255,176,0,.08); }
-.led-badge { background:#c8321e; color:#fff; font:700 13px/1 var(--mono); letter-spacing:.12em; padding:0 12px; display:flex; align-items:center; text-transform:uppercase; }
+.led { display:flex; align-items:stretch; background:#05080d; border:1px solid #1b2431; border-radius:6px; overflow:hidden; }
+.led-badge { background:#c8321e; color:#fff; font:700 10px/1 var(--mono); letter-spacing:.06em; padding:0 7px; display:flex; align-items:center; text-transform:uppercase; }
 .led-view { flex:1; min-width:0; overflow:hidden; }
-.led-track { display:inline-flex; gap:48px; white-space:nowrap; padding:11px 0; animation:led 120s linear infinite; font:500 16px/1 var(--mono); color:#ffb000; text-shadow:0 0 6px rgba(255,176,0,.65); }
+.led-track { display:inline-flex; gap:48px; white-space:nowrap; padding:6px 0; animation:led 120s linear infinite; font:500 13px/1 var(--mono); color:#ffb000; text-shadow:0 0 6px rgba(255,176,0,.65); }
 .led-track a { color:inherit; text-decoration:none; }
 .led-track a::before { content:"●"; font-size:9px; margin-right:12px; vertical-align:middle; }
 .led:hover .led-track { animation-play-state:paused; }
@@ -205,7 +205,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
 
   <section class="vidbox">
     <h2 data-i18n="videoHead">Our latest videos</h2>
-    <div class="vid"><iframe id="vidFrame" title="YouTube" loading="lazy" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="vid"><div id="vidHost"></div></div>
     <p style="margin:8px 0 0"><a href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener" style="color:inherit;font-weight:600">▶ YouTube-এ দেখুন / Watch on YouTube ↗</a></p>
   </section>
 
@@ -242,7 +242,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   var STR = {
     en: {
       kicker: "News Desk · Live Wire",
-      ledLabel: "BREAKING NEWS", videoHead: "Our latest videos", tip: "💡 Send a tip", brkHead: "Breaking news",
+      ledLabel: "BREAKING", videoHead: "Our latest videos", tip: "💡 Send a tip", brkHead: "Breaking news",
       slogan: "Truth · Justice · Transparency · Public Interest",
       refresh: "Refresh now", theme: "Theme", install: "Install app",
       search: "Search headlines, e.g. election, flood, sanctions",
@@ -264,7 +264,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     },
     bn: {
       kicker: "নিউজ ডেস্ক · সরাসরি",
-      ledLabel: "ব্রেকিং নিউজ", videoHead: "আমাদের সর্বশেষ ভিডিও", tip: "💡 খবরের সূত্র পাঠান", brkHead: "ব্রেকিং নিউজ",
+      ledLabel: "ব্রেকিং", videoHead: "আমাদের সর্বশেষ ভিডিও", tip: "💡 খবরের সূত্র পাঠান", brkHead: "ব্রেকিং নিউজ",
       slogan: "সত্য · ন্যায়বিচার · স্বচ্ছতা · জনস্বার্থ",
       refresh: "এখনই হালনাগাদ করুন", theme: "থিম", install: "অ্যাপ ইনস্টল করুন",
       search: "শিরোনাম খুঁজুন, যেমন নির্বাচন, বন্যা, নিষেধাজ্ঞা",
@@ -516,21 +516,35 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   el.src.addEventListener("change", function () { state.source = el.src.value; render(); });
   el.refresh.addEventListener("click", load);
 
+  var vidIds = [], vidPos = 0, vidPlayer = null, vidStarted = false;
+  function vidNext() {
+    if (vidPos >= vidIds.length) {
+      var h = document.getElementById("vidHost");
+      if (h) { h.outerHTML = '<a id="vidHost" href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;text-decoration:none">▶ YouTube-এ ভিডিও দেখুন</a>'; }
+      return;
+    }
+    var id = vidIds[vidPos++];
+    if (vidPlayer && vidPlayer.loadVideoById) { vidPlayer.loadVideoById(id); return; }
+    vidPlayer = new YT.Player("vidHost", {
+      videoId: id, width: "100%", height: "100%",
+      playerVars: { rel: 0, playsinline: 1 },
+      events: { onError: function () { vidNext(); } }
+    });
+  }
   function loadVideo() {
-    var f = document.getElementById("vidFrame"); if (!f || f.getAttribute("data-set")) return;
-    var id = "";
+    if (vidStarted) return; vidStarted = true;
     if (state.data) {
-      state.data.items.some(function (i) {
+      state.data.items.forEach(function (i) {
         if ((i.s || "").indexOf("The Inside Report BD") === 0) {
           var m = /[?&]v=([\w-]{11})/.exec(i.u || "") || /youtu\.be\/([\w-]{11})/.exec(i.u || "");
-          if (m) { id = m[1]; return true; }
+          if (m && vidIds.indexOf(m[1]) < 0 && vidIds.length < 10) vidIds.push(m[1]);
         }
-        return false;
       });
     }
-    f.setAttribute("data-set", "1");
-    f.src = id ? "https://www.youtube-nocookie.com/embed/" + id + "?rel=0"
-              : "https://www.youtube-nocookie.com/embed/videoseries?list=UUrBlP9XzG0B4veVK27HmMzA";
+    if (!vidIds.length) { vidIds.push("none00000000"); }
+    var sc = document.createElement("script"); sc.src = "https://www.youtube.com/iframe_api";
+    window.onYouTubeIframeAPIReady = vidNext;
+    document.head.appendChild(sc);
   }
   function applyTheme(mode) {
     document.documentElement.setAttribute("data-theme", mode);
