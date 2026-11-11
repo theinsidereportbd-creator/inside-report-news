@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Inside Report BD · পোস্ট</title>
+<meta name="theme-color" content="#071E4A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<style>
+:root { --bg:#f4f2ec; --panel:#fff; --ink:#0b1a33; --muted:#5a6575; --rule:#d8d4c8; --navy:#071e4a; --gold:#d2a53a; --red:#d32f2f; --ok:#1b7a3d; }
+@media (prefers-color-scheme: dark) { :root { --bg:#0a1426; --panel:#101d36; --ink:#eef1f6; --muted:#a3adbf; --rule:#26365a; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.55 "Noto Sans Bengali", system-ui, sans-serif; }
+.wrap { max-width:720px; margin:0 auto; padding:0 16px 80px; }
+header { background:var(--navy); color:#fff; padding:16px; border-bottom:3px solid var(--gold); }
+header .in { max-width:720px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+header h1 { font-size:20px; margin:0; }
+header a { color:var(--gold); font-size:15px; }
+label { display:block; font-weight:700; margin:18px 0 6px; }
+input[type=text], textarea, select { width:100%; font:inherit; padding:12px; border:1.5px solid var(--rule); border-radius:6px; background:var(--panel); color:var(--ink); }
+textarea { min-height:260px; resize:vertical; line-height:1.7; }
+button { font:inherit; font-weight:700; padding:12px 18px; border-radius:6px; border:1.5px solid var(--navy); background:var(--panel); color:var(--ink); cursor:pointer; }
+button.primary { background:var(--navy); color:#fff; border-color:var(--navy); }
+button.gold { background:var(--gold); color:#071e4a; border-color:var(--gold); }
+button:disabled { opacity:.5; cursor:default; }
+.hint { color:var(--muted); font-size:14px; margin:4px 0 0; }
+.row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.card { background:var(--panel); border:1px solid var(--rule); border-radius:8px; padding:14px 16px; margin-top:16px; }
+.thumbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px; margin-top:10px; }
+.thumb { position:relative; border:1px solid var(--rule); border-radius:6px; overflow:hidden; background:var(--panel); }
+.thumb img { display:block; width:100%; height:90px; object-fit:cover; }
+.thumb .n { position:absolute; left:4px; top:4px; background:var(--navy); color:#fff; font-size:12px; padding:1px 7px; border-radius:10px; }
+.thumb .x { position:absolute; right:2px; top:2px; padding:0 8px; font-size:16px; line-height:24px; border:0; background:rgba(0,0,0,.6); color:#fff; border-radius:12px; }
+.thumb .st { font-size:12px; padding:3px 6px; color:var(--muted); }
+.msg { margin-top:16px; padding:12px 14px; border-radius:6px; font-size:15px; display:none; }
+.msg.err { display:block; background:#fde8e8; color:#8a1c1c; }
+.msg.ok { display:block; background:#e4f5ea; color:#145c2d; }
+.msg.info { display:block; background:#fff3d6; color:#6b4a00; }
+.msg a { color:inherit; font-weight:700; }
+.label-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.label-row label { margin:0; font-weight:500; border:1.5px solid var(--rule); border-radius:20px; padding:6px 12px; cursor:pointer; background:var(--panel); }
+.label-row input { margin-right:6px; }
+details summary { cursor:pointer; font-weight:700; }
+.sticky { position:sticky; bottom:0; background:var(--bg); padding:12px 0; border-top:1px solid var(--rule); margin-top:20px; }
+
+.brand { display:flex; align-items:center; gap:12px; min-width:0; }
+.seal { width:48px; height:48px; border-radius:50%; flex:none; border:2px solid var(--gold); background:#071e4a center/cover no-repeat; }
+.brand b { display:block; font-family:"Source Serif 4","Noto Serif Bengali",Georgia,serif; font-size:19px; line-height:1.15; }
+.brand b i { font-style:normal; color:var(--gold); }
+.brand small { display:block; color:#cdd6e6; font-size:12px; }
+.motto { background:#0a2a63; color:var(--gold); text-align:center; font-size:13px; padding:6px 8px; letter-spacing:.05em; }
+.ticker { background:#071e4a; color:#fff; display:flex; align-items:stretch; border-bottom:1px solid #1b3a78; overflow:hidden; }
+.tk-badge { background:var(--red); font-weight:700; font-size:14px; padding:8px 12px; white-space:nowrap; }
+.tk-view { flex:1; overflow:hidden; position:relative; min-width:0; }
+.tk-track { display:inline-flex; gap:32px; white-space:nowrap; padding:8px 0; animation:tk 60s linear infinite; }
+.tk-track a { color:#fff; text-decoration:none; font-size:15px; }
+.tk-track a::before { content:"◆"; color:var(--gold); margin-right:10px; font-size:10px; }
+@keyframes tk { to { transform:translateX(-50%); } }
+.tabs { display:flex; background:var(--panel); border-bottom:1px solid var(--rule); position:sticky; top:0; z-index:5; }
+.tabs button { flex:1; border:0; border-bottom:3px solid transparent; border-radius:0; background:none; padding:14px 8px; font-weight:700; color:var(--muted); }
+.tabs button.on { color:var(--ink); border-bottom-color:var(--gold); }
+.posts { display:grid; gap:14px; margin-top:16px; }
+.pc { background:var(--panel); border:1px solid var(--rule); border-radius:8px; overflow:hidden; }
+.pc img { display:block; width:100%; aspect-ratio:16/9; object-fit:cover; background:#0a2a63; }
+.pc div { padding:12px 14px; }
+.pc .k { color:var(--red); font-size:12px; font-weight:700; letter-spacing:.06em; }
+.pc h3 { margin:4px 0 6px; font-size:18px; line-height:1.35; font-family:"Noto Serif Bengali",Georgia,serif; }
+.pc a { color:inherit; text-decoration:none; }
+.pc .m { color:var(--muted); font-size:13px; }
+.lang { display:flex; border:1.5px solid var(--gold); border-radius:20px; overflow:hidden; flex:none; }
+.lang button { border:0; border-radius:0; background:none; color:#fff; padding:5px 10px; font-size:13px; font-weight:700; }
+.lang button.on { background:var(--gold); color:#071e4a; }
+.hdr-r { display:flex; align-items:center; gap:10px; flex:none; }
+.hdr-r a { white-space:nowrap; }
+.tabs button { font-size:15px; }
+@media (max-width:420px) { .brand b { font-size:16px; } .brand small { display:none; } .tabs button { font-size:13px; padding:12px 4px; } }
+.vid { position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; margin-top:16px; }
+.vid iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+[hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<header><div class="in">
+  <div class="brand"><span class="seal" role="img" aria-label="TIR seal" style="background-image:url(data:image/jpeg;base64,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)"></span>
+  <span><b>The Inside Report <i>BD</i></b><small>তথ্য-প্রমাণ ভিত্তিক অনুসন্ধানী প্রতিবেদন</small></span></div>
+  <div class="hdr-r"><div class="lang" role="group" aria-label="Language / ভাষা"><button type="button" data-lang="bn" lang="bn">বাংলা</button><button type="button" data-lang="en" lang="en">EN</button></div><a href="https://theinsidereportbd.blogspot.com/" target="_blank" rel="noopener">ব্লগ ↗</a></div>
+</div></header>
+<div class="motto">সত্য · ন্যায় · স্বচ্ছতা · জনস্বার্থ</div>
+<div class="ticker" id="ticker" hidden><span class="tk-badge" id="tkBadge">সর্বশেষ</span><div class="tk-view"><div class="tk-track" id="tkTrack"></div></div></div>
+<nav class="tabs" id="tabs"><button type="button" class="on" data-t="new">✍️ নতুন পোস্ট</button><button type="button" data-t="latest">📰 সর্বশেষ পোস্ট</button><button type="button" data-t="video">🎬 ভিডিও</button></nav>
+<div class="wrap">
+
+  <!-- Setup (first time only) -->
+  <section class="card" id="setup" hidden>
+    <details id="setupDetails" open>
+      <summary>প্রথমবারের সেটআপ (একবারই)</summary>
+      <p class="hint">Google Cloud থেকে পাওয়া <b>Client ID</b> এখানে বসান। কোথায় পাবেন, তা README-র "পোস্ট অ্যাপ" অংশে ধাপে ধাপে লেখা আছে।</p>
+      <label for="cid">Google Client ID</label>
+      <input type="text" id="cid" placeholder="1234-abcd.apps.googleusercontent.com" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <label for="blogurl">ব্লগের ঠিকানা</label>
+      <input type="text" id="blogurl" value="https://theinsidereportbd.blogspot.com/" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="row" style="margin-top:12px"><button class="primary" id="saveCfg" type="button">সেভ করুন</button></div>
+    </details>
+  </section>
+
+  <section class="card" id="signin" hidden>
+    <p style="margin-top:0">পোস্ট করতে আগে Google দিয়ে ঢুকুন। এই অ্যাপ শুধু আপনার ব্লগে পোস্ট দেবে আর ছবি রাখবে, আর কিছু দেখবে না।</p>
+    <div class="row"><button class="primary" id="signinBtn" type="button">Google দিয়ে ঢুকুন</button>
+    <button id="editCfg" type="button">সেটআপ বদলান</button></div>
+  </section>
+
+  <form id="form" hidden>
+    <label for="title">শিরোনাম</label>
+    <input type="text" id="title" autocomplete="off" required>
+
+    <label>বিভাগ</label>
+    <div class="label-row" id="labels"></div>
+    <input type="text" id="extraLabels" placeholder="আরও ট্যাগ, কমা দিয়ে লিখুন (ঐচ্ছিক)" style="margin-top:8px">
+
+    <label>ছবি</label>
+    <div class="row"><button type="button" id="addPhotos">＋ ছবি যোগ করুন</button>
+    <input type="file" id="file" accept="image/*" multiple hidden></div>
+    <p class="hint">লেখার মধ্যে ছবির জায়গা ঠিক করতে লিখুন <b>[ছবি 1]</b>, <b>[ছবি 2]</b> …। না লিখলে সব ছবি লেখার ওপরে বসবে।</p>
+    <div class="thumbs" id="thumbs"></div>
+
+    <label for="body">লেখা</label>
+    <textarea id="body" placeholder="এখানে লিখুন। ফাঁকা লাইন দিলে নতুন অনুচ্ছেদ হবে।"></textarea>
+    <p class="hint"><b>## শিরোনাম</b> লিখলে উপশিরোনাম হবে · <b>- </b> দিয়ে শুরু করলে তালিকা · <b>**মোটা**</b> লিখলে মোটা অক্ষর</p>
+
+    <label for="mode">কী করবেন?</label>
+    <select id="mode">
+      <option value="draft">খসড়া হিসেবে রাখুন (পরে Blogger-এ দেখে প্রকাশ করবেন)</option>
+      <option value="live">এখনই প্রকাশ করুন</option>
+    </select>
+
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    <div class="sticky row">
+      <button class="gold" type="submit" id="send">পাঠান</button>
+      <button type="button" id="preview">দেখে নিন</button>
+      <button type="button" id="signout">বেরিয়ে যান</button>
+    </div>
+  </form>
+
+  <section id="videoBox" hidden>
+    <div class="vid"><iframe id="ytFrame" title="YouTube" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <p class="hint"><a href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener" style="color:inherit">YouTube-এ চ্যানেল খুলুন ↗</a></p>
+  </section>
+  <section id="latestBox" hidden><div class="posts" id="posts"><p class="hint">লোড হচ্ছে…</p></div></section>
+  <section class="card" id="previewBox" hidden>
+    <b>প্রিভিউ</b>
+    <div id="previewHtml" style="margin-top:8px"></div>
+  </section>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var LABELS = ["Breaking", "Investigation", "Politics", "International", "Economy", "Society", "Sports", "Entertainment", "Opinion"];
+  var SCOPES = "https://www.googleapis.com/auth/blogger https://www.googleapis.com/auth/drive.file";
+  var token = null, tokenExp = 0, blogId = null, tokenClient = null;
+  var photos = []; // {file, blob, url(local), remote, state}
+
+  function store(k, v) { try { if (v === undefined) { return localStorage.getItem(k); } localStorage.setItem(k, v); } catch (e) { return null; } }
+  function show(el, on) { el.hidden = !on; }
+  function say(kind, html) { var m = $("msg"); html = tr(html); m.className = "msg " + kind; m.innerHTML = html; if (!html) { m.className = "msg"; } }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+  /* ---------- body → HTML ---------- */
+  function inline(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>"); }
+  function photoHtml(p, i) {
+    if (!p.remote) { return ""; }
+    return '<div class="separator" style="clear: both; text-align: center;"><a href="' + p.remote + '"><img border="0" src="' + p.remote + '" style="max-width: 100%;" alt="ছবি ' + (i + 1) + '"></a></div>';
+  }
+  function toHtml(text, usePhotos) {
+    var used = {};
+    var blocks = text.replace(/\r/g, "").split(/\n\s*\n/);
+    var out = [];
+    blocks.forEach(function (b) {
+      b = b.trim(); if (!b) { return; }
+      var mm = b.match(/^\[(?:ছবি|photo|Photo)\s*([0-9০-৯]+)\]$/);
+      if (mm) {
+        var n = parseInt(mm[1].replace(/[০-৯]/g, function (d) { return "০১২৩৪৫৬৭৮৯".indexOf(d); }), 10) - 1;
+        if (photos[n]) { used[n] = 1; out.push(usePhotos ? photoHtml(photos[n], n) : '<p><i>[ছবি ' + (n + 1) + ']</i></p>'); }
+        return;
+      }
+      if (/^##\s+/.test(b)) { out.push("<h2>" + inline(b.replace(/^##\s+/, "")) + "</h2>"); return; }
+      var lines = b.split("\n");
+      if (lines.every(function (l) { return /^[-•]\s+/.test(l); })) {
+        out.push("<ul>" + lines.map(function (l) { return "<li>" + inline(l.replace(/^[-•]\s+/, "")) + "</li>"; }).join("") + "</ul>");
+        return;
+      }
+      out.push("<p>" + lines.map(inline).join("<br>") + "</p>");
+    });
+    var head = "";
+    photos.forEach(function (p, i) { if (!used[i]) { head += usePhotos ? photoHtml(p, i) : '<p><i>[ছবি ' + (i + 1) + ' — লেখার ওপরে বসবে]</i></p>'; } });
+    return head + out.join("\n");
+  }
+
+  /* ---------- photos ---------- */
+  function shrink(file) {
+    return new Promise(function (res, rej) {
+      var img = new Image(), u = URL.createObjectURL(file);
+      img.onload = function () {
+        var max = 1600, w = img.naturalWidth, h = img.naturalHeight, s = Math.min(1, max / Math.max(w, h));
+        var c = document.createElement("canvas"); c.width = Math.round(w * s); c.height = Math.round(h * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (b) { URL.revokeObjectURL(u); b ? res(b) : rej(new Error("ছবি ছোট করা যায়নি")); }, "image/jpeg", 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(u); rej(new Error("ছবি খোলা যায়নি")); };
+      img.src = u;
+    });
+  }
+  function drawThumbs() {
+    var box = $("thumbs"); box.innerHTML = "";
+    photos.forEach(function (p, i) {
+      var d = document.createElement("div"); d.className = "thumb";
+      d.innerHTML = '<img alt=""><span class="n">' + (i + 1) + '</span><button type="button" class="x" aria-label="বাদ দিন">×</button><div class="st"></div>';
+      d.querySelector("img").src = p.local;
+      d.querySelector(".st").textContent = p.remote ? "আপলোড হয়েছে" : "অপেক্ষায়";
+      d.querySelector(".x").onclick = function () { photos.splice(i, 1); drawThumbs(); };
+      box.appendChild(d);
+    });
+  }
+  $("addPhotos").onclick = function () { $("file").click(); };
+  $("file").onchange = function () {
+    var fs = Array.prototype.slice.call(this.files); this.value = "";
+    fs.forEach(function (f) {
+      shrink(f).then(function (b) { photos.push({ blob: b, local: URL.createObjectURL(b), remote: null, name: f.name }); drawThumbs(); })
+        .catch(function (e) { say("err", esc(e.message)); });
+    });
+  };
+
+
+  /* ---------- language: Bangla / English ---------- */
+  var EN = {
+ "তথ্য-প্রমাণ ভিত্তিক অনুসন্ধানী প্রতিবেদন": "Evidence-based investigative reporting",
+ "ব্লগ ↗": "Blog ↗",
+ "সত্য · ন্যায় · স্বচ্ছতা · জনস্বার্থ": "Truth · Justice · Transparency · Public Interest",
+ "সর্বশেষ": "Latest",
+ "✍️ নতুন পোস্ট": "✍️ New post",
+ "📰 সর্বশেষ পোস্ট": "📰 Latest posts",
+ "🎬 ভিডিও": "🎬 Videos",
+ "YouTube-এ চ্যানেল খুলুন ↗": "Open the channel on YouTube ↗",
+ "প্রথমবারের সেটআপ (একবারই)": "First-time setup (one time only)",
+ "Google Cloud থেকে পাওয়া": "Paste the",
+ "এখানে বসান। কোথায় পাবেন, তা README-র \"পোস্ট অ্যাপ\" অংশে ধাপে ধাপে লেখা আছে।": "from Google Cloud here.",
+ "ব্লগের ঠিকানা": "Blog address",
+ "সেভ করুন": "Save",
+ "পোস্ট করতে আগে Google দিয়ে ঢুকুন। এই অ্যাপ শুধু আপনার ব্লগে পোস্ট দেবে আর ছবি রাখবে, আর কিছু দেখবে না।": "Sign in with Google to post. This app only publishes to your blog and stores your photos. It reads nothing else.",
+ "Google দিয়ে ঢুকুন": "Sign in with Google",
+ "সেটআপ বদলান": "Change setup",
+ "শিরোনাম": "Title",
+ "বিভাগ": "Category",
+ "ছবি": "Photos",
+ "＋ ছবি যোগ করুন": "＋ Add photos",
+ "লেখার মধ্যে ছবির জায়গা ঠিক করতে লিখুন": "To place a photo inside the text, write",
+ "[ছবি 1]": "[photo 1]",
+ "[ছবি 2]": "[photo 2]",
+ "…। না লিখলে সব ছবি লেখার ওপরে বসবে।": "…. Otherwise all photos go above the text.",
+ "লেখা": "Text",
+ "## শিরোনাম": "## Heading",
+ "লিখলে উপশিরোনাম হবে ·": "makes a subheading ·",
+ "দিয়ে শুরু করলে তালিকা ·": "at line start makes a list ·",
+ "**মোটা**": "**bold**",
+ "লিখলে মোটা অক্ষর": "makes bold text",
+ "কী করবেন?": "What to do?",
+ "খসড়া হিসেবে রাখুন (পরে Blogger-এ দেখে প্রকাশ করবেন)": "Save as draft (review and publish later in Blogger)",
+ "এখনই প্রকাশ করুন": "Publish now",
+ "পাঠান": "Send",
+ "দেখে নিন": "Preview",
+ "বেরিয়ে যান": "Sign out",
+ "লোড হচ্ছে…": "Loading…",
+ "প্রিভিউ": "Preview",
+ "আরও ট্যাগ, কমা দিয়ে লিখুন (ঐচ্ছিক)": "More tags, comma separated (optional)",
+ "এখানে লিখুন। ফাঁকা লাইন দিলে নতুন অনুচ্ছেদ হবে।": "Write here. A blank line starts a new paragraph.",
+ "শিরোনাম লিখুন।": "Please write a title.",
+ "লেখা বা ছবি দিন।": "Add some text or a photo.",
+ "পাঠানো হচ্ছে… একটু অপেক্ষা করুন।": "Sending… please wait.",
+ "পোস্ট তৈরি হচ্ছে…": "Creating the post…",
+ "পোস্ট দেখুন": "View post",
+ "Blogger-এ খুলে প্রকাশ করুন": "Open in Blogger to publish",
+ "প্রকাশ হয়েছে।": "Published.",
+ "খসড়া সেভ হয়েছে।": "Draft saved.",
+ "Client ID সাধারণত .apps.googleusercontent.com দিয়ে শেষ হয়। আবার দেখুন।": "A Client ID normally ends with .apps.googleusercontent.com. Please check it.",
+ "Google লোড হচ্ছে, এক মিনিট পর আবার চেষ্টা করুন।": "Google is still loading. Try again in a minute.",
+ "পোস্ট আনা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।": "Could not load posts. Check your connection and try again.",
+ "আবার ঢুকতে হবে। 'পাঠান' আরেকবার চাপুন।": "Please sign in again, then press Send once more.",
+ "ঢোকা যায়নি: ": "Sign-in failed: ",
+ "নতুন পোস্ট": "New post"
+};
+  var lang = store("iir_lang") === "en" ? "en" : "bn";
+  function tr(s) { return lang === "en" && EN[s] !== undefined ? EN[s] : s; }
+  function applyLang() {
+    document.documentElement.lang = lang;
+    Array.prototype.forEach.call(document.querySelectorAll(".lang button"), function (b) { b.className = b.getAttribute("data-lang") === lang ? "on" : ""; });
+    var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+      var t = n.parentNode && n.parentNode.nodeName; return (t === "SCRIPT" || t === "STYLE" || t === "TEXTAREA") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+    var n; while ((n = w.nextNode())) {
+      if (n.__bn === undefined) { var raw = n.nodeValue.trim(); if (!raw || EN[raw] === undefined) { continue; } n.__bn = n.nodeValue; n.__key = raw; }
+      n.nodeValue = lang === "en" ? n.__bn.replace(n.__key, EN[n.__key]) : n.__bn;
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("[placeholder]"), function (el) {
+      if (el.__ph === undefined) { if (EN[el.placeholder] === undefined) { return; } el.__ph = el.placeholder; }
+      el.placeholder = lang === "en" ? EN[el.__ph] : el.__ph;
+    });
+    var opt = document.querySelectorAll("#mode option"); /* option text nodes handled above */
+    document.title = lang === "en" ? "The Inside Report BD · Post" : "The Inside Report BD · পোস্ট";
+    try { drawThumbs(); } catch (e) {}
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".lang button"), function (b) {
+    b.onclick = function () { lang = b.getAttribute("data-lang"); store("iir_lang", lang); applyLang(); loadLatestDates(); };
+  });
+  function loadLatestDates() { try { loadLatest(); } catch (e) {} }
+
+  /* ---------- Google API ---------- */
+  function api(url, opt) {
+    opt = opt || {}; opt.headers = Object.assign({ Authorization: "Bearer " + token }, opt.headers || {});
+    return fetch(url, opt).then(function (r) {
+      return r.text().then(function (t) {
+        var j = null; try { j = JSON.parse(t); } catch (e) {}
+        if (!r.ok) { var m = (j && j.error && (j.error.message || j.error)) || t || r.status; var err = new Error(String(m)); err.status = r.status; throw err; }
+        return j;
+      });
+    });
+  }
+  function ensureToken() {
+    return new Promise(function (res, rej) {
+      if (token && Date.now() < tokenExp - 60000) { return res(); }
+      if (!tokenClient) { return rej(new Error("আবার ঢুকুন")); }
+      tokenClient.callback = function (r) {
+        if (r.error) { return rej(new Error("Google থেকে অনুমতি মেলেনি: " + r.error)); }
+        token = r.access_token; tokenExp = Date.now() + (r.expires_in || 3600) * 1000; res();
+      };
+      tokenClient.requestAccessToken({ prompt: token ? "" : "consent" });
+    });
+  }
+  function findBlog() {
+    if (blogId) { return Promise.resolve(blogId); }
+    var url = store("iir_blogurl") || "https://theinsidereportbd.blogspot.com/";
+    return api("https://www.googleapis.com/blogger/v3/blogs/byurl?url=" + encodeURIComponent(url)).then(function (b) { blogId = b.id; return blogId; });
+  }
+  function uploadPhoto(p) {
+    if (p.remote) { return Promise.resolve(); }
+    var meta = { name: "inside-report-" + Date.now() + "-" + Math.floor(Math.random() * 1e4) + ".jpg", mimeType: "image/jpeg" };
+    var form = new FormData();
+    form.append("metadata", new Blob([JSON.stringify(meta)], { type: "application/json" }));
+    form.append("file", p.blob);
+    return api("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id", { method: "POST", body: form }).then(function (f) {
+      return api("https://www.googleapis.com/drive/v3/files/" + f.id + "/permissions", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: "reader", type: "anyone" })
+      }).then(function () { p.remote = "https://lh3.googleusercontent.com/d/" + f.id + "=w1600"; });
+    });
+  }
+  function chosenLabels() {
+    var l = Array.prototype.slice.call(document.querySelectorAll("#labels input:checked")).map(function (i) { return i.value; });
+    $("extraLabels").value.split(",").forEach(function (t) { t = t.trim(); if (t && l.indexOf(t) < 0) { l.push(t); } });
+    return l;
+  }
+
+  /* ---------- submit ---------- */
+  $("form").onsubmit = function (ev) {
+    ev.preventDefault();
+    var title = $("title").value.trim(), body = $("body").value;
+    if (!title) { say("err", "শিরোনাম লিখুন।"); return; }
+    if (!body.trim() && !photos.length) { say("err", "লেখা বা ছবি দিন।"); return; }
+    var btn = $("send"); btn.disabled = true; say("info", "পাঠানো হচ্ছে… একটু অপেক্ষা করুন।");
+    ensureToken().then(findBlog).then(function (id) {
+      var chain = Promise.resolve();
+      photos.forEach(function (p, i) { chain = chain.then(function () { say("info", (lang === "en" ? "Uploading photo (" : "ছবি আপলোড হচ্ছে (") + (i + 1) + "/" + photos.length + ")…"); return uploadPhoto(p); }).then(drawThumbs); });
+      return chain.then(function () {
+        say("info", "পোস্ট তৈরি হচ্ছে…");
+        var live = $("mode").value === "live";
+        var post = { kind: "blogger#post", title: title, content: toHtml(body, true), labels: chosenLabels() };
+        return api("https://www.googleapis.com/blogger/v3/blogs/" + id + "/posts?isDraft=" + (live ? "false" : "true"), {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(post)
+        }).then(function (r) {
+          store("iir_last", "");
+          if (live) { say("ok", tr('প্রকাশ হয়েছে।') + ' <a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + tr('পোস্ট দেখুন') + '</a>'); }
+          else { say("ok", tr('খসড়া সেভ হয়েছে।') + ' <a href="https://www.blogger.com/blog/posts/' + id + '" target="_blank" rel="noopener">' + tr('Blogger-এ খুলে প্রকাশ করুন') + '</a>'); }
+          $("title").value = ""; $("body").value = ""; photos = []; drawThumbs(); try { localStorage.removeItem("iir_draft"); } catch (e) {}
+        });
+      });
+    }).catch(function (e) {
+      var m = e.message || String(e);
+      if (e.status === 401) { token = null; m = tr("আবার ঢুকতে হবে। 'পাঠান' আরেকবার চাপুন।"); }
+      if (/has not been used|disabled|accessNotConfigured/i.test(m)) { m += " — Google Cloud-এ Blogger API আর Drive API চালু করা আছে কিনা দেখুন।"; }
+      say("err", esc(m));
+    }).then(function () { btn.disabled = false; });
+  };
+  $("preview").onclick = function () {
+    $("previewHtml").innerHTML = "<h2>" + esc($("title").value) + "</h2>" + toHtml($("body").value, false);
+    show($("previewBox"), true); $("previewBox").scrollIntoView({ behavior: "smooth" });
+  };
+
+  /* ---------- draft autosave (this phone only) ---------- */
+  function saveDraft() { store("iir_draft", JSON.stringify({ t: $("title").value, b: $("body").value, x: $("extraLabels").value })); }
+  ["title", "body", "extraLabels"].forEach(function (id) { $(id).addEventListener("input", saveDraft); });
+  try { var d = JSON.parse(store("iir_draft") || "null"); if (d) { $("title").value = d.t || ""; $("body").value = d.b || ""; $("extraLabels").value = d.x || ""; } } catch (e) {}
+
+  /* ---------- sign-in & config ---------- */
+  LABELS.forEach(function (l) {
+    var lab = document.createElement("label"); lab.innerHTML = '<input type="checkbox" value="' + l + '">' + l; $("labels").appendChild(lab);
+  });
+  function route() {
+    var cid = store("iir_cid");
+    show($("setup"), !cid); show($("signin"), !!cid && !token); show($("form"), !!token);
+    $("cid").value = cid || ""; $("blogurl").value = store("iir_blogurl") || $("blogurl").value;
+  }
+  $("saveCfg").onclick = function () {
+    var c = $("cid").value.trim(); if (!/\.apps\.googleusercontent\.com$/.test(c)) { alert(tr("Client ID সাধারণত .apps.googleusercontent.com দিয়ে শেষ হয়। আবার দেখুন।")); return; }
+    store("iir_cid", c); store("iir_blogurl", $("blogurl").value.trim()); tokenClient = null; initTokenClient(); route();
+  };
+  $("editCfg").onclick = function () { show($("setup"), true); show($("signin"), true); };
+  $("signinBtn").onclick = function () {
+    if (!tokenClient) { initTokenClient(); }
+    if (!tokenClient) { alert(tr("Google লোড হচ্ছে, এক মিনিট পর আবার চেষ্টা করুন।")); return; }
+    tokenClient.callback = function (r) {
+      if (r.error) { alert(tr("ঢোকা যায়নি: ") + r.error); return; }
+      token = r.access_token; tokenExp = Date.now() + (r.expires_in || 3600) * 1000; route();
+    };
+    tokenClient.requestAccessToken({ prompt: "consent" });
+  };
+  $("signout").onclick = function () {
+    if (token && window.google) { try { google.accounts.oauth2.revoke(token); } catch (e) {} }
+    token = null; blogId = null; route();
+  };
+  function initTokenClient() {
+    var cid = store("iir_cid");
+    if (!cid || !window.google || !google.accounts) { return; }
+    tokenClient = google.accounts.oauth2.initTokenClient({ client_id: cid, scope: SCOPES, callback: function () {} });
+  }
+  window.addEventListener("load", function () { var t = 0; (function wait() { initTokenClient(); if (!tokenClient && store("iir_cid") && t++ < 20) { setTimeout(wait, 300); } })(); });
+
+  /* ---------- latest posts, ticker (public feed, no sign-in needed) ---------- */
+  function blogBase() { return (store("iir_blogurl") || "https://theinsidereportbd.blogspot.com/").replace(/\/+$/, ""); }
+  function feedJsonp(path, n, cb) {
+    var name = "iircb" + Math.floor(Math.random() * 1e9);
+    var sc = document.createElement("script");
+    window[name] = function (d) { try { cb(null, d); } finally { delete window[name]; sc.remove(); } };
+    sc.onerror = function () { cb(new Error("feed")); delete window[name]; sc.remove(); };
+    sc.src = blogBase() + path + "?alt=json-in-script&max-results=" + n + "&callback=" + name;
+    document.head.appendChild(sc);
+  }
+  function entryInfo(e) {
+    var u = ""; (e.link || []).forEach(function (l) { if (l.rel === "alternate") { u = l.href; } });
+    var img = e.media$thumbnail ? e.media$thumbnail.url.replace(/\/s72-c\//, "/w640/") : "";
+    var lab = (e.category && e.category[0]) ? e.category[0].term : "";
+    return { t: e.title.$t, u: u, img: img, lab: lab, d: e.published ? new Date(e.published.$t) : null };
+  }
+  function loadLatest() {
+    feedJsonp("/feeds/posts/summary", 20, function (err, d) {
+      var box = $("posts");
+      if (err || !d.feed || !d.feed.entry) { box.innerHTML = '<p class="hint">' + tr("পোস্ট আনা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।") + '</p>'; return; }
+      var es = d.feed.entry.map(entryInfo);
+      box.innerHTML = "";
+      es.forEach(function (p) {
+        var c = document.createElement("article"); c.className = "pc";
+        c.innerHTML = (p.img ? '<a href="' + esc(p.u) + '" target="_blank" rel="noopener"><img loading="lazy" alt="" src="' + esc(p.img) + '"></a>' : "") +
+          '<div>' + (p.lab ? '<span class="k">' + esc(p.lab) + '</span>' : "") +
+          '<h3><a href="' + esc(p.u) + '" target="_blank" rel="noopener">' + esc(p.t) + '</a></h3>' +
+          '<span class="m">' + (p.d ? p.d.toLocaleDateString(lang === "en" ? "en-GB" : "bn-BD", { day: "numeric", month: "long", year: "numeric" }) : "") + '</span></div>';
+        box.appendChild(c);
+      });
+      var tr = $("tkTrack"), html = "";
+      es.slice(0, 10).forEach(function (p) { html += '<a href="' + esc(p.u) + '" target="_blank" rel="noopener">' + esc(p.t) + '</a>'; });
+      tr.innerHTML = html + html; show($("ticker"), true);
+    });
+  }
+  function tab(name) {
+    Array.prototype.forEach.call(document.querySelectorAll("#tabs button"), function (b) { b.className = b.getAttribute("data-t") === name ? "on" : ""; });
+    var signedIn = !!token, cid = !!store("iir_cid");
+    show($("latestBox"), name === "latest"); show($("videoBox"), name === "video");
+    if (name === "video" && !$("ytFrame").src) { $("ytFrame").src = "https://www.youtube.com/embed/videoseries?list=UUrBlP9XzG0B4veVK27HmMzA"; }
+    if (name === "new") { route(); } else { show($("setup"), false); show($("signin"), false); show($("form"), false); show($("previewBox"), false); }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#tabs button"), function (b) { b.onclick = function () { tab(b.getAttribute("data-t")); }; });
+  loadLatest();
+  applyLang();
+  route();
+  if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js").catch(function () {}); }
+})();
+</script>
+</body>
+</html>
