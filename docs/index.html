@@ -640,5 +640,22 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   setInterval(status, 30000);
 })();
 </script>
+<script>
+/* In the installed app, open outside links in Chrome through an Android intent (some phones drop the plain link). */
+(function () {
+  var standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone;
+  if (!standalone || !/Android/i.test(navigator.userAgent)) return;
+  window.__iirOpen = function (h) { window.location.href = h; };
+  document.addEventListener("click", function (e) {
+    var a = e.target && e.target.closest ? e.target.closest("a[href]") : null; if (!a) return;
+    var u; try { u = new URL(a.href, window.location.href); } catch (x) { return; }
+    if (u.protocol !== "http:" && u.protocol !== "https:") return;
+    if (u.origin === window.location.origin) return;
+    if (/(^|\.)youtube\.com$|(^|\.)youtu\.be$/.test(u.hostname)) return;
+    e.preventDefault();
+    window.__iirOpen("intent://" + u.host + u.pathname + u.search + "#Intent;scheme=" + u.protocol.slice(0, -1) + ";package=com.android.chrome;S.browser_fallback_url=" + encodeURIComponent(u.href) + ";end");
+  }, true);
+})();
+</script>
 </body>
 </html>
