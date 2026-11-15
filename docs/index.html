@@ -117,8 +117,8 @@ input[type="search"] {
 
 
 
-.brk { border:2px solid var(--live); border-radius:8px; background:var(--panel); overflow:hidden; }
-.brk h2 { margin:0; background:var(--live); color:#fff; font:700 14px/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; padding:10px 14px; }
+.brk { border:1px solid var(--rule); border-radius:10px; background:var(--panel); overflow:hidden; }
+.brk h2 { margin:0; color:var(--muted); font:700 13px/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; padding:12px 14px; border-bottom:1px solid var(--rule); }
 .brk ul { list-style:none; margin:0; padding:0; }
 .brk li { display:grid; grid-template-columns:84px minmax(0,1fr); gap:12px; padding:12px 14px; border-top:1px solid var(--rule); align-items:start; }
 .brk li:first-child { border-top:0; }
@@ -133,9 +133,34 @@ input[type="search"] {
 .led-track { display:inline-flex; gap:48px; white-space:nowrap; padding:6px 0; animation:led 120s linear infinite; font:500 13px/1 var(--mono); color:#ffb000; text-shadow:0 0 6px rgba(255,176,0,.65); }
 .led-track a { color:inherit; text-decoration:none; }
 .led-track a::before { content:"●"; font-size:9px; margin-right:12px; vertical-align:middle; }
-.led:hover .led-track { animation-play-state:paused; }
+.led:hover .led-track, .led:active .led-track { animation-play-state:paused; }
 @keyframes led { to { transform:translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .led-track { animation:none; } }
+
+.latest { display:grid; gap:12px; }
+.latest h2.lh { margin:0; font:700 13px/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+.lgrid { display:grid; grid-template-columns:1fr; gap:14px; }
+@media (min-width:700px) { .lgrid { grid-template-columns:1fr 1fr; } }
+.lcard { border:1px solid var(--rule); border-radius:10px; background:var(--panel); overflow:hidden; display:flex; flex-direction:column; }
+.lcard .lk { font:700 11px/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--live); padding:12px 14px 10px; }
+.lthumb { position:relative; display:block; width:100%; aspect-ratio:16/9; background:#0a2a63 center/cover no-repeat; }
+.lcard .vid { border:0; border-radius:0; }
+.lcard .lb { padding:12px 14px 14px; display:grid; gap:8px; }
+.lcard .lt { font:600 19px/1.4 var(--serif); color:var(--ink); text-decoration:none; overflow-wrap:anywhere; }
+.lcard a.lt:hover { text-decoration:underline; }
+.lcard .lm { font:400 12px/1.4 var(--mono); color:var(--muted); }
+.lcard .lgo { font-weight:600; color:var(--ink); }
+.chip { display:inline-flex; align-items:center; height:22px; font:700 11px/1 var(--mono); padding:0 10px; border-radius:99px; margin-right:6px; color:#fff; letter-spacing:0; text-transform:none; }
+.chip.v { background:#1b7a3d; } .chip.u { background:#b8861f; } .chip.b { background:#c8321e; }
+.vstrip { display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; }
+.vstrip a { flex:none; width:150px; text-decoration:none; color:inherit; }
+.vstrip .vt { height:84px; background:#000 center/cover; border-radius:6px; }
+.vstrip .vc { font-size:12px; line-height:1.35; margin-top:4px; max-height:34px; overflow:hidden; }
+.latest .brk li a { font-size:17px; }
+html[lang="bn"] body { font-size:17.5px; line-height:1.7; }
+html[lang="bn"] .headline { font-size:19px; line-height:1.55; }
+html[lang="bn"] .lcard .lt { font-size:20.5px; line-height:1.5; }
+html[lang="bn"] .latest h2.lh, html[lang="bn"] .lcard .lk, html[lang="bn"] .brk h2 { letter-spacing:0; text-transform:none; font-size:15px; }
 .vidbox h2 { margin:0 0 8px; font:600 18px/1.2 var(--serif); }
 .vid { position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; border:1px solid var(--rule); }
 .vid iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
@@ -199,15 +224,27 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     <a href="post.html" id="postlink" style="padding:7px 12px;border:1px solid var(--rule);border-radius:6px;background:var(--panel);color:inherit;text-decoration:none;min-height:38px;display:inline-flex;align-items:center">✍️ Post</a>
   </div>
 
-  <section class="brk" id="brk" hidden><h2 data-i18n="brkHead">Breaking news</h2><ul id="brkList"></ul></section>
 
   <div class="led" id="led" hidden><span class="led-badge" data-i18n="ledLabel">LIVE</span><div class="led-view"><div class="led-track" id="ledTrack"></div></div></div>
 
-  <section class="vidbox">
-    <h2 data-i18n="videoHead">Our latest videos</h2>
-    <div class="vid"><div id="vidHost"></div></div>
-    <p id="vidCap" style="margin:8px 0 0;font-weight:600"></p><div id="vidStrip" style="display:flex;gap:10px;overflow-x:auto;margin-top:8px"></div>
-    <p style="margin:8px 0 0"><a href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener" style="color:inherit;font-weight:600">▶ YouTube-এ দেখুন / Watch on YouTube ↗</a></p>
+  <section class="latest" id="latest">
+    <h2 class="lh" data-i18n="latestHead">Our latest post &amp; video</h2>
+    <div class="lgrid">
+      <article class="lcard" id="postCard">
+        <div class="lk" data-i18n="postKicker">Latest post</div>
+        <div class="lb" id="postBody"><span class="lm" data-i18n="loading">Loading…</span></div>
+      </article>
+      <article class="lcard">
+        <div class="lk" data-i18n="videoKicker">Latest video</div>
+        <div class="vid" id="vidWrap"><div id="vidHost"></div></div>
+        <div class="lb">
+          <div class="lt" id="vidCap"></div>
+          <div class="vstrip" id="vidStrip"></div>
+          <a class="lgo" href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener" data-i18n="watchYt">▶ Watch on YouTube ↗</a>
+        </div>
+      </article>
+    </div>
+    <section class="brk" id="brk" hidden><h2 data-i18n="morePosts">More posts</h2><ul id="brkList"></ul></section>
   </section>
 
   <div id="notice" class="notice" hidden></div>
@@ -243,7 +280,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   var STR = {
     en: {
       kicker: "News Desk · Live Wire",
-      ledLabel: "BREAKING", videoHead: "Our latest videos", tip: "💡 Send a tip", brkHead: "Breaking news",
+      ledLabel: "BREAKING", latestHead: "Our latest post & video", postKicker: "Latest post", videoKicker: "Latest video", morePosts: "More posts", chipV: "✔ Verified", chipU: "⏳ Under verification", chipB: "Breaking", noPosts: "No posts yet.", readPost: "Read the post ↗", watchYt: "▶ Watch on YouTube ↗", noVideo: "▶ Open our YouTube channel", videoHead: "Our latest videos", tip: "💡 Send a tip", brkHead: "Breaking news",
       slogan: "Truth · Justice · Transparency · Public Interest",
       refresh: "Refresh now", theme: "Theme", install: "Install app",
       search: "Search headlines, e.g. election, flood, sanctions",
@@ -265,7 +302,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     },
     bn: {
       kicker: "নিউজ ডেস্ক · সরাসরি",
-      ledLabel: "ব্রেকিং", videoHead: "আমাদের সর্বশেষ ভিডিও", tip: "💡 খবরের সূত্র পাঠান", brkHead: "ব্রেকিং নিউজ",
+      ledLabel: "ব্রেকিং", latestHead: "আমাদের সর্বশেষ পোস্ট ও ভিডিও", postKicker: "সর্বশেষ পোস্ট", videoKicker: "সর্বশেষ ভিডিও", morePosts: "আরও পোস্ট", chipV: "✔ যাচাইকৃত", chipU: "⏳ যাচাই চলছে", chipB: "ব্রেকিং", noPosts: "এখনো কোনো পোস্ট নেই।", readPost: "পোস্টটি পড়ুন ↗", watchYt: "▶ YouTube-এ দেখুন ↗", noVideo: "▶ আমাদের YouTube চ্যানেল খুলুন", videoHead: "আমাদের সর্বশেষ ভিডিও", tip: "💡 খবরের সূত্র পাঠান", brkHead: "ব্রেকিং নিউজ",
       slogan: "সত্য · ন্যায়বিচার · স্বচ্ছতা · জনস্বার্থ",
       refresh: "এখনই হালনাগাদ করুন", theme: "থিম", install: "অ্যাপ ইনস্টল করুন",
       search: "শিরোনাম খুঁজুন, যেমন নির্বাচন, বন্যা, নিষেধাজ্ঞা",
@@ -295,7 +332,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     "Radio / Portal": "রেডিও / পোর্টাল", "Own channel": "নিজস্ব চ্যানেল"
   };
 
-  var state = { data: null, region: "All", source: "", query: "", lang: "en", loadState: "loading" };
+  var state = { posts: null, data: null, region: "All", source: "", query: "", lang: "en", loadState: "loading" };
   var el = {
     updated: document.getElementById("updated"), counts: document.getElementById("counts"),
     dot: document.getElementById("dot"), notice: document.getElementById("notice"),
@@ -443,38 +480,58 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   function repaint() {
     applyStatic();
     if (state.data) { renderChips(); renderSources(); render(); }
+    renderLatest();
     status();
   }
 
   /* Breaking posts from our own blog (label "Breaking"), public feed via JSONP */
   var BLOG = "https://theinsidereportbd.blogspot.com";
   function loadBreaking() {
-    var cb = "iirbrk" + Date.now();
+    var cb = "iirpost" + Date.now();
     var sc = document.createElement("script");
     window[cb] = function (d) {
       try {
         var es = (d && d.feed && d.feed.entry) || [];
-        var ul = document.getElementById("brkList"), box = document.getElementById("brk");
-        if (!ul || !box || !es.length) return;
-        ul.innerHTML = "";
-        es.slice(0, 5).forEach(function (e) {
+        state.posts = es.slice(0, 6).map(function (e) {
           var u = ""; (e.link || []).forEach(function (l) { if (l.rel === "alternate") { u = l.href; } });
-          if (!/^https?:\/\//i.test(u)) return;
-          var img = e.media$thumbnail ? e.media$thumbnail.url.replace(/\/s72-c\//, "/w300/") : "";
-          var li = document.createElement("li"); if (!img) li.className = "noimg";
-          if (img) { var im = document.createElement("img"); im.src = img; im.alt = ""; im.loading = "lazy"; li.appendChild(im); }
-          var box2 = document.createElement("div");
-          var a = document.createElement("a"); a.href = u; a.target = "_blank"; a.rel = "noopener"; a.textContent = e.title.$t;
-          var m = document.createElement("span"); m.className = "m";
-          m.textContent = e.published ? new Date(e.published.$t).toLocaleString(locale(), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
-          box2.appendChild(a); box2.appendChild(m); li.appendChild(box2); ul.appendChild(li);
-        });
-        box.hidden = !ul.children.length;
+          var img = e.media$thumbnail ? e.media$thumbnail.url.replace(/\/s72-c\//, "/w640-h360-c/").replace(/=s72-c/, "=w640-h360-c") : "";
+          return { t: e.title.$t, u: u, img: img, d: e.published ? e.published.$t : "", labels: (e.category || []).map(function (c) { return c.term; }) };
+        }).filter(function (p) { return /^https?:\/\//i.test(p.u); });
+        renderLatest();
       } finally { delete window[cb]; sc.remove(); }
     };
     sc.onerror = function () { delete window[cb]; sc.remove(); };
-    sc.src = BLOG + "/feeds/posts/summary/-/Breaking?alt=json-in-script&max-results=5&callback=" + cb;
+    sc.src = BLOG + "/feeds/posts/summary?alt=json-in-script&max-results=6&callback=" + cb;
     document.head.appendChild(sc);
+  }
+  function chipsFor(p) {
+    var h = "";
+    if (p.labels.indexOf("Breaking") >= 0) h += '<span class="chip b">' + t("chipB") + "</span>";
+    if (p.labels.indexOf("Verified") >= 0) h += '<span class="chip v">' + t("chipV") + "</span>";
+    else if (p.labels.indexOf("Unverified") >= 0) h += '<span class="chip u">' + t("chipU") + "</span>";
+    return h;
+  }
+  function escH(x) { return String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
+  function renderLatest() {
+    var body = document.getElementById("postBody"); if (!body) return;
+    var ps = state.posts || [];
+    if (!ps.length) { if (state.posts) body.innerHTML = '<span class="lm">' + escH(t("noPosts")) + "</span>"; return; }
+    var p = ps[0];
+    var when = p.d ? new Date(p.d).toLocaleString(locale(), { day: "numeric", month: "long", year: "numeric" }) : "";
+    var card = document.getElementById("postCard");
+    var old = card.querySelector(".lthumb"); if (old) old.remove();
+    if (p.img) { var th = document.createElement("a"); th.className = "lthumb"; th.href = p.u; th.target = "_blank"; th.rel = "noopener"; th.style.backgroundImage = "url(" + p.img + ")"; card.insertBefore(th, body); }
+    body.innerHTML = '<div>' + chipsFor(p) + '</div><a class="lt" href="' + escH(p.u) + '" target="_blank" rel="noopener">' + escH(p.t) + '</a><span class="lm">' + escH(when) + '</span><a class="lgo" href="' + escH(p.u) + '" target="_blank" rel="noopener">' + escH(t("readPost")) + "</a>";
+    var ul = document.getElementById("brkList"), box = document.getElementById("brk");
+    ul.innerHTML = "";
+    ps.slice(1, 5).forEach(function (q) {
+      var li = document.createElement("li"); if (!q.img) li.className = "noimg";
+      if (q.img) { var im = document.createElement("img"); im.src = q.img; im.alt = ""; im.loading = "lazy"; li.appendChild(im); }
+      var d2 = document.createElement("div");
+      d2.innerHTML = '<div>' + chipsFor(q) + '</div><a href="' + escH(q.u) + '" target="_blank" rel="noopener">' + escH(q.t) + '</a><span class="m">' + escH(q.d ? new Date(q.d).toLocaleString(locale(), { day: "numeric", month: "short" }) : "") + "</span>";
+      li.appendChild(d2); ul.appendChild(li);
+    });
+    box.hidden = !ul.children.length;
   }
 
   function ledUpdate() {
@@ -491,7 +548,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     items = items.slice(0, 40); if (!items.length) return;
     var h = "";
     items.forEach(function (i) { h += '<a href="' + safeUrl(i.u).replace(/"/g, "&quot;") + '" target="_blank" rel="noopener noreferrer">' + i.s.replace(/</g, "&lt;") + ": " + i.t.replace(/</g, "&lt;") + "</a>"; });
-    tr.innerHTML = h + h; tr.style.animationDuration = Math.max(80, items.length * 9) + "s"; box.hidden = false;
+    tr.innerHTML = h + h; tr.style.animationDuration = Math.max(120, items.length * 13) + "s"; box.hidden = false;
   }
 
   function load() {
@@ -500,7 +557,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     return fetch("news.json?ts=" + Date.now(), { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (data) { state.data = data; state.loadState = "ok"; repaint(); ledUpdate(); loadVideo(); })
-      .catch(function () { state.loadState = "failed"; status(); })
+      .catch(function (err) { if (window.console) console.error("load failed", err); state.loadState = "failed"; status(); })
       .then(function () { el.refresh.disabled = false; });
   }
 
@@ -518,28 +575,30 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   el.refresh.addEventListener("click", load);
 
   function loadVideo() {
-    var host = document.getElementById("vidHost"); if (!host || !state.data) return;
+    var wrap = document.getElementById("vidWrap"); if (!wrap || !state.data) return;
     var vids = [];
     state.data.items.forEach(function (i) {
       if ((i.s || "").indexOf("The Inside Report BD") !== 0) return;
       var m = /[?&]v=([\w-]{11})/.exec(i.u || "") || /(?:youtu\.be\/|shorts\/)([\w-]{11})/.exec(i.u || "");
       if (m && !vids.some(function (v) { return v.id === m[1]; }) && vids.length < 6) vids.push({ id: m[1], t: i.t || "", u: i.u });
     });
-    if (!vids.length) return;
-    var box = host.parentNode;
-    function esc(x) { return String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
+    if (!vids.length) {
+      wrap.style.aspectRatio = "auto";
+      wrap.innerHTML = '<a class="lgo" style="display:block;padding:18px 14px" href="https://www.youtube.com/@theinsidereportbd" target="_blank" rel="noopener">' + escH(t("noVideo")) + "</a>";
+      return;
+    }
     function feature(v) {
-      box.innerHTML = '<div id="vidHost" style="position:absolute;inset:0;background:#000 url(https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg) center/contain no-repeat;cursor:pointer"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;background:rgba(200,50,30,.92);display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;padding-left:5px">&#9654;</span></div>';
-      box.firstChild.onclick = function () {
-        box.innerHTML = '<iframe title="YouTube" src="https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>';
+      wrap.innerHTML = '<div id="vidHost" style="position:absolute;inset:0;background:#000 url(https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg) center/contain no-repeat;cursor:pointer"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;background:rgba(200,50,30,.92);display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;padding-left:5px">&#9654;</span></div>';
+      wrap.firstChild.onclick = function () {
+        wrap.innerHTML = '<iframe title="YouTube" src="https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>';
       };
       var cap = document.getElementById("vidCap"); if (cap) cap.textContent = v.t;
     }
     feature(vids[0]);
     var strip = document.getElementById("vidStrip");
-    if (strip && vids.length > 1) {
-      strip.innerHTML = vids.slice(1).map(function (v, n) {
-        return '<a href="' + esc(v.u) + '" target="_blank" rel="noopener" style="flex:none;width:130px;text-decoration:none;color:inherit"><div style="height:74px;background:#000 url(https://i.ytimg.com/vi/' + v.id + '/mqdefault.jpg) center/cover;border-radius:6px"></div><div style="font-size:12px;line-height:1.3;margin-top:4px;max-height:32px;overflow:hidden">' + esc(v.t) + '</div></a>';
+    if (strip) {
+      strip.innerHTML = vids.slice(1).map(function (v) {
+        return '<a href="' + escH(v.u) + '" target="_blank" rel="noopener"><div class="vt" style="background-image:url(https://i.ytimg.com/vi/' + v.id + '/mqdefault.jpg)"></div><div class="vc">' + escH(v.t) + "</div></a>";
       }).join("");
     }
   }

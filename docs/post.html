@@ -158,7 +158,7 @@ details summary { cursor:pointer; font-weight:700; }
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
-  var LABELS = ["Breaking", "Investigation", "Politics", "International", "Economy", "Society", "Sports", "Entertainment", "Opinion"];
+  var LABELS = ["Breaking", "Verified", "Unverified", "Investigation", "Politics", "International", "Economy", "Society", "Sports", "Entertainment", "Opinion"];
   var SCOPES = "https://www.googleapis.com/auth/blogger https://www.googleapis.com/auth/drive.file";
   var token = null, tokenExp = 0, blogId = null, tokenClient = null;
   var photos = []; // {file, blob, url(local), remote, state}
@@ -402,7 +402,12 @@ details summary { cursor:pointer; font-weight:700; }
 
   /* ---------- sign-in & config ---------- */
   LABELS.forEach(function (l) {
-    var lab = document.createElement("label"); lab.innerHTML = '<input type="checkbox" value="' + l + '">' + l; $("labels").appendChild(lab);
+    var lab = document.createElement("label"); lab.innerHTML = '<input type="checkbox" value="' + l + '">' + ({ Verified: "✔ যাচাইকৃত (Verified)", Unverified: "⏳ যাচাই চলছে (Unverified)", Breaking: "ব্রেকিং (Breaking)" }[l] || l); $("labels").appendChild(lab);
+  });
+  $("labels").addEventListener("change", function (e) {
+    var t = e.target; if (!t || !t.checked) return;
+    var other = t.value === "Verified" ? "Unverified" : t.value === "Unverified" ? "Verified" : "";
+    if (other) { var o = document.querySelector('#labels input[value="' + other + '"]'); if (o) o.checked = false; }
   });
   function route() {
     var cid = store("iir_cid");
