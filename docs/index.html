@@ -176,6 +176,12 @@ html[lang="bn"] .latest h2.lh, html[lang="bn"] .lcard .lk, html[lang="bn"] .brk 
 .meta span { color: var(--muted); font-weight: 400; }
 .headline { min-width: 0; font: 500 17px/1.4 var(--serif); }
 .headline a { color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.aibtn { margin-top:6px; font:600 12px/1 var(--sans); padding:6px 10px; border:1px solid var(--rule); border-radius:14px; background:transparent; color:var(--accent); cursor:pointer; }
+.aipanel { margin-top:10px; padding:10px 12px; border:1px solid var(--rule); border-radius:8px; background:var(--panel); font:400 14px/1.6 var(--sans); }
+.aipanel ul { margin:0 0 8px; padding-left:18px; }
+.aipanel .ailinks { display:flex; flex-wrap:wrap; gap:8px; }
+.aipanel .ailinks a, .aipanel .ailinks button { font:600 12px/1 var(--sans); padding:7px 11px; border:1px solid var(--accent); border-radius:14px; color:var(--accent); background:transparent; text-decoration:none; cursor:pointer; }
+.aipanel .ainote { color:var(--muted); font-size:12px; margin:0 0 8px; }
 .headline a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .headline a:visited { color: var(--muted); }
 .empty { padding: 28px 16px; color: var(--muted); }
@@ -280,7 +286,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
   var STR = {
     en: {
       kicker: "News Desk · Live Wire",
-      ledLabel: "BREAKING", latestHead: "Our latest post & video", postKicker: "Latest post", videoKicker: "Latest video", morePosts: "More posts", chipV: "✔ Verified", chipU: "⏳ Under verification", chipB: "Breaking", noPosts: "No posts yet.", readPost: "Read the post ↗", watchYt: "▶ Watch on YouTube ↗", noVideo: "▶ Open our YouTube channel", videoHead: "Our latest videos", tip: "💡 Send a tip", brkHead: "Breaking news",
+      ledLabel: "BREAKING", aiBtn: "✨ Summary", aiKey: "Key points", aiNone: "No excerpt from the source — open the story for details.", aiNote: "Quick extract from the source feed, not an AI verdict. Verify before sharing.", aiAsk: "Ask Claude ↗", aiGpt: "Ask ChatGPT ↗", aiCopy: "Copy", aiCopied: "Copied ✓", aiPrompt: "Summarise this news in 3 bullet points, then say what should be verified before publishing:", latestHead: "Our latest post & video", postKicker: "Latest post", videoKicker: "Latest video", morePosts: "More posts", chipV: "✔ Verified", chipU: "⏳ Under verification", chipB: "Breaking", noPosts: "No posts yet.", readPost: "Read the post ↗", watchYt: "▶ Watch on YouTube ↗", noVideo: "▶ Open our YouTube channel", videoHead: "Our latest videos", tip: "💡 Send a tip", brkHead: "Breaking news",
       slogan: "Truth · Justice · Transparency · Public Interest",
       refresh: "Refresh now", theme: "Theme", install: "Install app",
       search: "Search headlines, e.g. election, flood, sanctions",
@@ -302,7 +308,7 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     },
     bn: {
       kicker: "নিউজ ডেস্ক · সরাসরি",
-      ledLabel: "ব্রেকিং", latestHead: "আমাদের সর্বশেষ পোস্ট ও ভিডিও", postKicker: "সর্বশেষ পোস্ট", videoKicker: "সর্বশেষ ভিডিও", morePosts: "আরও পোস্ট", chipV: "✔ যাচাইকৃত", chipU: "⏳ যাচাই চলছে", chipB: "ব্রেকিং", noPosts: "এখনো কোনো পোস্ট নেই।", readPost: "পোস্টটি পড়ুন ↗", watchYt: "▶ YouTube-এ দেখুন ↗", noVideo: "▶ আমাদের YouTube চ্যানেল খুলুন", videoHead: "আমাদের সর্বশেষ ভিডিও", tip: "💡 খবরের সূত্র পাঠান", brkHead: "ব্রেকিং নিউজ",
+      ledLabel: "ব্রেকিং", aiBtn: "✨ সারাংশ", aiKey: "মূল কথা", aiNone: "সূত্রের ফিডে বাড়তি লেখা নেই — বিস্তারিত পড়তে খবরটি খুলুন।", aiNote: "সূত্র থেকে নেওয়া দ্রুত অংশ, AI-এর রায় নয়। প্রচারের আগে যাচাই করুন।", aiAsk: "Claude-কে জিজ্ঞেস করুন ↗", aiGpt: "ChatGPT-কে জিজ্ঞেস করুন ↗", aiCopy: "কপি", aiCopied: "কপি হয়েছে ✓", aiPrompt: "এই খবরটি ৩টি পয়েন্টে সারাংশ করো এবং প্রচারের আগে কী কী যাচাই করা দরকার তা বলো:", latestHead: "আমাদের সর্বশেষ পোস্ট ও ভিডিও", postKicker: "সর্বশেষ পোস্ট", videoKicker: "সর্বশেষ ভিডিও", morePosts: "আরও পোস্ট", chipV: "✔ যাচাইকৃত", chipU: "⏳ যাচাই চলছে", chipB: "ব্রেকিং", noPosts: "এখনো কোনো পোস্ট নেই।", readPost: "পোস্টটি পড়ুন ↗", watchYt: "▶ YouTube-এ দেখুন ↗", noVideo: "▶ আমাদের YouTube চ্যানেল খুলুন", videoHead: "আমাদের সর্বশেষ ভিডিও", tip: "💡 খবরের সূত্র পাঠান", brkHead: "ব্রেকিং নিউজ",
       slogan: "সত্য · ন্যায়বিচার · স্বচ্ছতা · জনস্বার্থ",
       refresh: "এখনই হালনাগাদ করুন", theme: "থিম", install: "অ্যাপ ইনস্টল করুন",
       search: "শিরোনাম খুঁজুন, যেমন নির্বাচন, বন্যা, নিষেধাজ্ঞা",
@@ -422,6 +428,32 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
     el.sourcesTitle.textContent = t("outlets", { live: num(live), total: num(state.data.sources.length) });
   }
 
+  function toggleAi(li, btn, i) {
+    var old = li.querySelector(".aipanel");
+    if (old) { old.remove(); return; }
+    var box = document.createElement("div"); box.className = "aipanel";
+    var h = document.createElement("strong"); h.textContent = t("aiKey"); box.appendChild(h);
+    var pts = (i.x || "").split(/(?<=[.!?।])\s+/).filter(function (x) { return x.length > 20; }).slice(0, 3);
+    if (pts.length) {
+      var ul = document.createElement("ul");
+      pts.forEach(function (x) { var l = document.createElement("li"); l.textContent = x; ul.appendChild(l); });
+      box.appendChild(ul);
+    } else {
+      var n = document.createElement("p"); n.className = "ainote"; n.textContent = t("aiNone"); box.appendChild(n);
+    }
+    var nt = document.createElement("p"); nt.className = "ainote"; nt.textContent = t("aiNote"); box.appendChild(nt);
+    var q = t("aiPrompt") + "\n\n" + i.t + (i.x ? "\n" + i.x : "") + "\n" + i.u;
+    var row = document.createElement("div"); row.className = "ailinks";
+    var a1 = document.createElement("a"); a1.href = "https://claude.ai/new?q=" + encodeURIComponent(q); a1.target = "_blank"; a1.rel = "noopener noreferrer"; a1.textContent = t("aiAsk");
+    var a2 = document.createElement("a"); a2.href = "https://chatgpt.com/?q=" + encodeURIComponent(q); a2.target = "_blank"; a2.rel = "noopener noreferrer"; a2.textContent = t("aiGpt");
+    var cp = document.createElement("button"); cp.type = "button"; cp.textContent = t("aiCopy");
+    cp.addEventListener("click", function () {
+      try { navigator.clipboard.writeText(q).then(function () { cp.textContent = t("aiCopied"); }); } catch (e) {}
+    });
+    row.appendChild(a1); row.appendChild(a2); row.appendChild(cp); box.appendChild(row);
+    li.querySelector(".headline").appendChild(box);
+  }
+
   function render() {
     if (!state.data) return;
     var q = state.query.trim().toLowerCase();
@@ -455,6 +487,9 @@ html[lang="bn"] .kicker, html[lang="bn"] .day, html[lang="bn"] .meta { letter-sp
       var hd = document.createElement("div"); hd.className = "headline";
       var a = document.createElement("a"); a.href = safeUrl(i.u); a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = i.t;
       hd.appendChild(a);
+      var ab = document.createElement("button"); ab.type = "button"; ab.className = "aibtn"; ab.textContent = t("aiBtn");
+      ab.addEventListener("click", function () { toggleAi(li, ab, i); });
+      hd.appendChild(document.createElement("br")); hd.appendChild(ab);
       li.appendChild(tm); li.appendChild(meta); li.appendChild(hd); el.feed.appendChild(li);
     });
     el.counts.textContent = t(items.length === 1 ? "one" : "many", { n: num(items.length) });
