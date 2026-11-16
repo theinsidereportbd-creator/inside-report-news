@@ -84,17 +84,19 @@ def parse_feed(xml_bytes, now=None):
     for el in root.iter():
         if local(el.tag) not in ("item", "entry"):
             continue
-        title, date_text = "", None
+        title, date_text, desc = "", None, ""
         for child in el:
             name = local(child.tag)
             if name == "title":
                 title = clean("".join(child.itertext()))
+            elif name in ("description", "summary", "encoded", "content") and not desc:
+                desc = clean("".join(child.itertext()))
             elif name in ("pubDate", "published", "updated", "date") and not date_text:
                 date_text = child.text
         link = entry_link(el)
         if not title or not link or not link.lower().startswith(("http://", "https://")):
             continue
-        items.append({"title": title, "link": link, "date": parse_date(date_text) or now})
+        items.append({"title": title, "link": link, "date": parse_date(date_text) or now, "desc": desc[:400]})
     return items
 
 
@@ -129,14 +131,17 @@ def build(results, now=None):
                 continue
             seen_links.add(it["link"])
             seen_titles.add(key)
-            items.append({
+            row = {
                 "t": it["title"],
                 "u": it["link"],
                 "s": feed["name"],
                 "r": feed["region"],
                 "y": feed["type"],
                 "d": it["date"].strftime("%Y-%m-%dT%H:%M:%SZ"),
-            })
+            }
+            if it.get("desc") and normalize(it["desc"]) != key:
+                row["x"] = it["desc"]
+            items.append(row)
             kept += 1
         sources.append({"name": feed["name"], "region": feed["region"], "ok": res["ok"], "count": kept, "error": res["error"]})
     items.sort(key=lambda i: i["d"], reverse=True)
