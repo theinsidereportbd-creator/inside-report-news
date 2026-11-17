@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video Maker — The Inside Report BD</title>
+<meta name="theme-color" content="#0e1620">
+<style>
+:root { --bg:#f3f5f8; --panel:#fff; --ink:#14202e; --muted:#5a6877; --rule:#d8dee6; --accent:#1d4f91; --warn:#b7791f; }
+html[data-theme="dark"] { --bg:#0e1620; --panel:#15202d; --ink:#e7edf4; --muted:#9aa8b8; --rule:#263444; --accent:#6aa6ec; --warn:#f2b84b; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 "IBM Plex Sans","Noto Sans Bengali",system-ui,sans-serif; }
+html[lang="bn"] body { font-size:17px; }
+.wrap { max-width:720px; margin:0 auto; padding:14px 16px 70px; }
+.top { display:flex; gap:8px; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; }
+a, button, select, input, textarea, label.btn { font:inherit; color:inherit; }
+.btn, button, select { border:1px solid var(--rule); background:var(--panel); border-radius:8px; padding:8px 14px; min-height:40px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
+.btn.primary, button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+html[data-theme="dark"] .btn.primary, html[data-theme="dark"] button.primary { color:#0e1620; }
+button:disabled { opacity:.5; cursor:default; }
+h1 { font-size:22px; margin:6px 0 2px; }
+h2 { font-size:15px; margin:0 0 10px; letter-spacing:.04em; color:var(--muted); text-transform:uppercase; }
+.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+.card { background:var(--panel); border:1px solid var(--rule); border-radius:12px; padding:14px; margin-bottom:14px; }
+.note { color:var(--muted); font-size:13px; margin:8px 0 0; }
+input[type=text], textarea, select { width:100%; border:1px solid var(--rule); background:var(--bg); border-radius:8px; padding:10px 12px; }
+label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); }
+.clip { display:grid; grid-template-columns:56px 1fr auto; gap:10px; align-items:center; padding:8px 0; border-top:1px solid var(--rule); }
+.clip:first-child { border-top:0; }
+.clip canvas, .clip img { width:56px; height:56px; object-fit:cover; border-radius:6px; background:#0a1220; }
+.clip .nm { overflow-wrap:anywhere; font-size:14px; }
+.clip .ops { display:flex; gap:4px; }
+.clip .ops button { min-height:36px; padding:4px 10px; }
+.row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.row > * { flex:1 1 140px; }
+#stage { display:none; width:100%; max-width:360px; margin:12px auto 0; border-radius:10px; background:#000; aspect-ratio:9/16; }
+#bar { height:8px; border-radius:6px; background:var(--rule); overflow:hidden; margin-top:12px; display:none; }
+#bar i { display:block; height:100%; width:0; background:var(--accent); }
+#out { display:none; width:100%; max-width:360px; margin:12px auto 0; border-radius:10px; background:#000; }
+.warn { color:var(--warn); }
+.hide { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="btn" href="./" id="back"></a>
+    <div class="row" style="flex:0 0 auto;gap:8px"><button type="button" id="lang"></button><button type="button" id="thm"></button></div>
+  </div>
+  <h1 id="h1"></h1>
+  <p class="sub" id="sub"></p>
+
+  <section class="card">
+    <h2 id="s1"></h2>
+    <label class="btn primary" for="files" id="pick"></label>
+    <input type="file" id="files" accept="video/*,image/*" multiple class="hide">
+    <div id="clips" style="margin-top:8px"></div>
+    <p class="note" id="n1"></p>
+  </section>
+
+  <section class="card">
+    <h2 id="s2"></h2>
+    <label class="f" id="lt"></label><input type="text" id="title" maxlength="140">
+    <label class="f" id="ls"></label><input type="text" id="subt" maxlength="120">
+  </section>
+
+  <section class="card">
+    <h2 id="s3"></h2>
+    <div class="row">
+      <div><label class="f" id="lp"></label><select id="preset"></select></div>
+      <div><label class="f" id="lso"></label><select id="sound"></select></div>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <div><label class="f" id="lmax"></label><select id="maxc"><option value="3">3</option><option value="5" selected>5</option><option value="8">8</option><option value="12">12</option></select></div>
+      <div><label class="f" id="lkeep"></label><select id="keep"><option value="0"></option><option value="1"></option></select></div>
+    </div>
+    <div id="ownrow" class="hide"><label class="f" id="lown"></label><input type="file" id="own" accept="audio/*"></div>
+    <div class="row" style="margin-top:10px"><button type="button" id="prevsnd"></button></div>
+  </section>
+
+  <section class="card">
+    <h2 id="s4"></h2>
+    <button type="button" class="primary" id="make" style="width:100%"></button>
+    <div id="bar"><i></i></div>
+    <p class="note" id="status"></p>
+    <canvas id="stage" width="720" height="1280"></canvas>
+    <video id="out" controls playsinline></video>
+    <div style="margin-top:12px"><a class="btn primary hide" id="dl"></a></div>
+    <p class="note" id="n4"></p>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  var $ = function (id) { return document.getElementById(id); };
+  var lang = store("iir-lang") === "en" ? "en" : "bn";
+  var W = 720, H = 1280, FPS = 30, INTRO = 2.2, OUTRO = 2.6;
+
+  var T = {
+    bn: {
+      back: "← নিউজ ডেস্ক", h1: "🎬 ভিডিও মেকার", sub: "ফুটেজ দিন, শিরোনাম লিখুন, প্রিসেট বাছুন। বাকিটা অ্যাপ করবে: ইন্ট্রো, শিরোনাম বার, সাসপেন্স সাউন্ড আর আউট্রো।",
+      s1: "১. ফুটেজ", pick: "🎞️ ভিডিও / ছবি বেছে নিন", n1: "একসাথে অনেকগুলো বাছতে পারবেন। পরপর জুড়ে যাবে। নিজের তোলা বা ব্যবহারের অনুমতি আছে এমন ফুটেজই দিন।",
+      s2: "২. লেখা", lt: "শিরোনাম", ls: "ছোট লাইন (ঐচ্ছিক)",
+      s3: "৩. ধরন ও সাউন্ড", lp: "প্রিসেট", lso: "সাউন্ড", lmax: "প্রতিটা ক্লিপ সর্বোচ্চ (সেকেন্ড)", lkeep: "ফুটেজের নিজের শব্দ",
+      keep0: "বাদ", keep1: "রাখুন", lown: "নিজের গান/অডিও ফাইল", prevsnd: "🔊 সাউন্ড শুনে দেখুন (৫ সেকেন্ড)",
+      s4: "৪. তৈরি করুন", make: "▶ ভিডিও তৈরি করুন", n4: "ভিডিও তৈরির সময় পেজ বন্ধ করবেন না বা অন্য অ্যাপে যাবেন না। যত বড়, তত সময় লাগে।",
+      dl: "⬇ ভিডিও ডাউনলোড", none: "আগে অন্তত একটা ভিডিও বা ছবি দিন।", working: "তৈরি হচ্ছে… পেজ খোলা রাখুন", done: "তৈরি হয়ে গেছে ✓ নিচে দেখুন ও ডাউনলোড করুন।",
+      noRec: "এই ব্রাউজারে ভিডিও রেকর্ড করা যাচ্ছে না। Chrome ব্যবহার করুন।", up: "↑", down: "↓", del: "✕",
+      p: { inv: "🕵️ ইনভেস্টিগেশন", ten: "⚡ টেনশন", brk: "🔴 ব্রেকিং", fact: "✔ ফ্যাক্ট-চেক" },
+      k: { inv: "ইনভেস্টিগেশন", ten: "বিশেষ প্রতিবেদন", brk: "ব্রেকিং", fact: "ফ্যাক্ট-চেক" },
+      snd: { suspense: "সাসপেন্স", tension: "টেনশন (টিক-টিক)", heartbeat: "হার্টবিট", breaking: "জরুরি পালস", none: "কোনো সাউন্ড নয়", own: "নিজের অডিও ফাইল" },
+      tag: "সত্য · ন্যায়বিচার · স্বচ্ছতা · জনস্বার্থ", out1: "আমাদের সাথে থাকুন", out2: "YouTube: @theinsidereportbd", defTitle: "শিরোনাম এখানে"
+    },
+    en: {
+      back: "← News desk", h1: "🎬 Video maker", sub: "Add footage, type a headline, pick a preset. The app adds the intro, headline bar, suspense sound and outro.",
+      s1: "1. Footage", pick: "🎞️ Choose videos / images", n1: "Pick several at once. They are joined in order. Use only footage you shot or have permission to use.",
+      s2: "2. Text", lt: "Headline", ls: "Sub-line (optional)",
+      s3: "3. Style & sound", lp: "Preset", lso: "Sound", lmax: "Max per clip (seconds)", lkeep: "Original footage sound",
+      keep0: "Off", keep1: "Keep", lown: "Your own music / audio file", prevsnd: "🔊 Preview sound (5 s)",
+      s4: "4. Make it", make: "▶ Make video", n4: "Do not close the page or switch apps while it renders. Longer videos take longer.",
+      dl: "⬇ Download video", none: "Add at least one video or image first.", working: "Rendering… keep this page open", done: "Done ✓ Watch below and download.",
+      noRec: "This browser cannot record video. Use Chrome.", up: "↑", down: "↓", del: "✕",
+      p: { inv: "🕵️ Investigation", ten: "⚡ Tension", brk: "🔴 Breaking", fact: "✔ Fact-check" },
+      k: { inv: "INVESTIGATION", ten: "SPECIAL REPORT", brk: "BREAKING", fact: "FACT-CHECK" },
+      snd: { suspense: "Suspense", tension: "Tension (ticking)", heartbeat: "Heartbeat", breaking: "Urgent pulse", none: "No sound", own: "My own audio file" },
+      tag: "Truth · Justice · Transparency · Public Interest", out1: "Stay with us", out2: "YouTube: @theinsidereportbd", defTitle: "Headline here"
+    }
+  };
+  var PRESET_SOUND = { inv: "suspense", ten: "tension", brk: "breaking", fact: "heartbeat" };
+  function t(k) { return T[lang][k]; }
+
+  var items = [];           // {file, kind, url, el, dur, name}
+  var ownBuf = null;
+  var busy = false;
+  var seal = new Image(); seal.src = "icon-192.png";
+
+  /* ------------ UI ------------ */
+  function fillSelect(sel, pairs, keep) {
+    var cur = sel.value; sel.textContent = "";
+    pairs.forEach(function (p) { var o = document.createElement("option"); o.value = p[0]; o.textContent = p[1]; sel.appendChild(o); });
+    if (keep && cur) sel.value = cur;
+  }
+  function paint() {
+    document.documentElement.lang = lang;
+    ["back","h1","sub","s1","n1","s2","s3","s4","make","n4","dl","prevsnd"].forEach(function (k) { $(k).textContent = t(k); });
+    $("pick").textContent = t("pick"); $("lt").textContent = t("lt"); $("ls").textContent = t("ls");
+    $("lp").textContent = t("lp"); $("lso").textContent = t("lso"); $("lmax").textContent = t("lmax"); $("lkeep").textContent = t("lkeep"); $("lown").textContent = t("lown");
+    $("keep").options[0].textContent = t("keep0"); $("keep").options[1].textContent = t("keep1");
+    fillSelect($("preset"), Object.keys(t("p")).map(function (k) { return [k, t("p")[k]]; }), true);
+    fillSelect($("sound"), Object.keys(t("snd")).map(function (k) { return [k, t("snd")[k]]; }), true);
+    $("title").placeholder = t("defTitle");
+    $("lang").textContent = lang === "bn" ? "English" : "বাংলা";
+    $("thm").textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "☀️" : "🌙";
+    $("ownrow").className = $("sound").value === "own" ? "" : "hide";
+    renderClips();
+  }
+  function renderClips() {
+    var c = $("clips"); c.textContent = "";
+    items.forEach(function (it, i) {
+      var r = document.createElement("div"); r.className = "clip";
+      var th = document.createElement("canvas"); th.width = 56; th.height = 56; r.appendChild(th);
+      try { var g = th.getContext("2d"); var s = it.thumb; if (s) { var m = Math.min(it.w, it.h); g.drawImage(s, (it.w - m) / 2, (it.h - m) / 2, m, m, 0, 0, 56, 56); } } catch (e) {}
+      var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = (it.kind === "video" ? "🎞️ " : "🖼️ ") + it.name + (it.kind === "video" && it.dur ? " (" + Math.round(it.dur) + "s)" : "");
+      r.appendChild(nm);
+      var ops = document.createElement("div"); ops.className = "ops";
+      [["up", -1], ["down", 1], ["del", 0]].forEach(function (o) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = t(o[0]);
+        b.addEventListener("click", function () {
+          if (busy) return;
+          if (o[1] === 0) { items.splice(i, 1); }
+          else { var j = i + o[1]; if (j < 0 || j >= items.length) return; var x = items[i]; items[i] = items[j]; items[j] = x; }
+          renderClips();
+        });
+        ops.appendChild(b);
+      });
+      r.appendChild(ops); c.appendChild(r);
+    });
+  }
+
+  $("files").addEventListener("change", function () {
+    var list = Array.prototype.slice.call(this.files || []); this.value = "";
+    list.forEach(function (f) {
+      var url = URL.createObjectURL(f);
+      if (/^video\//.test(f.type)) {
+        var v = document.createElement("video"); v.preload = "auto"; v.playsInline = true; v.muted = true; v.src = url;
+        var it = { file: f, kind: "video", url: url, el: v, name: f.name, dur: 0, w: 0, h: 0 };
+        items.push(it);
+        v.addEventListener("loadedmetadata", function () { it.dur = v.duration || 0; it.w = v.videoWidth; it.h = v.videoHeight; renderClips(); });
+        v.addEventListener("loadeddata", function () { it.thumb = v; renderClips(); });
+      } else if (/^image\//.test(f.type)) {
+        var im = new Image(); var it2 = { file: f, kind: "image", url: url, el: im, name: f.name, dur: 4, w: 0, h: 0 };
+        items.push(it2);
+        im.onload = function () { it2.w = im.naturalWidth; it2.h = im.naturalHeight; it2.thumb = im; renderClips(); };
+        im.src = url;
+      }
+    });
+    renderClips();
+  });
+  $("sound").addEventListener("change", function () { $("ownrow").className = this.value === "own" ? "" : "hide"; });
+  $("preset").addEventListener("change", function () { $("sound").value = PRESET_SOUND[this.value] || "suspense"; $("ownrow").className = "hide"; });
+  $("own").addEventListener("change", function () { ownBuf = null; });
+  $("lang").addEventListener("click", function () { lang = lang === "bn" ? "en" : "bn"; store("iir-lang", lang); paint(); });
+  $("thm").addEventListener("click", function () {
+    var d = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", d); store("iir-theme", d); paint();
+  });
+  document.documentElement.setAttribute("data-theme", store("iir-theme") === "light" ? "light" : "dark");
+
+  /* ------------ Sound (synthesized) ------------ */
+  function noiseBuffer(ctx, sec) {
+    var b = ctx.createBuffer(1, Math.max(1, Math.floor(ctx.sampleRate * sec)), ctx.sampleRate), d = b.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  }
+  function synth(ctx, out, total, kind, t0) {
+    var master = ctx.createGain(); master.gain.setValueAtTime(0.0001, t0);
+    master.gain.exponentialRampToValueAtTime(0.9, t0 + 1.0);
+    master.gain.setValueAtTime(0.9, t0 + Math.max(1.1, total - 1.4));
+    master.gain.exponentialRampToValueAtTime(0.0001, t0 + total);
+    var comp = ctx.createDynamicsCompressor(); master.connect(comp); comp.connect(out);
+    var nb = noiseBuffer(ctx, 3);
+
+    function env(g, t, a, len, vol) {
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.max(vol, 0.0002), t + a);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+    }
+    function drone(freq, vol) {
+      var g = ctx.createGain(); g.gain.value = vol;
+      var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 260; lp.Q.value = 4;
+      var lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 0.09; lg.gain.value = 140; lfo.connect(lg); lg.connect(lp.frequency);
+      [0, 0.7].forEach(function (det) {
+        var o = ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = freq + det; o.connect(lp); o.start(t0); o.stop(t0 + total + 0.2);
+      });
+      lp.connect(g); g.connect(master); lfo.start(t0); lfo.stop(t0 + total + 0.2);
+    }
+    function hit(t, vol) {
+      var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine";
+      o.frequency.setValueAtTime(75, t); o.frequency.exponentialRampToValueAtTime(32, t + 1.1);
+      env(g, t, 0.01, 1.4, vol); o.connect(g); g.connect(master); o.start(t); o.stop(t + 1.5);
+      var n = ctx.createBufferSource(); n.buffer = nb; var f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 900;
+      var ng = ctx.createGain(); env(ng, t, 0.005, 0.5, vol * 0.5); n.connect(f); f.connect(ng); ng.connect(master); n.start(t); n.stop(t + 0.6);
+    }
+    function riser(t, len, vol) {
+      var n = ctx.createBufferSource(); n.buffer = nb; n.loop = true;
+      var f = ctx.createBiquadFilter(); f.type = "bandpass"; f.Q.value = 3;
+      f.frequency.setValueAtTime(200, t); f.frequency.exponentialRampToValueAtTime(4500, t + len);
+      var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + len);
+      g.gain.linearRampToValueAtTime(0.0001, t + len + 0.08);
+      n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t + len + 0.1);
+    }
+    function tick(t, vol) {
+      var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = 1900;
+      env(g, t, 0.001, 0.03, vol); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.05);
+    }
+    function thump(t, vol) {
+      var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine";
+      o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.16);
+      env(g, t, 0.01, 0.22, vol); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.3);
+    }
+    function eerie(t, len, vol) {
+      [880, 932.3].forEach(function (fr) {
+        var o = ctx.createOscillator(), g = ctx.createGain(), tr = ctx.createOscillator(), tg = ctx.createGain();
+        o.type = "sine"; o.frequency.value = fr; tr.frequency.value = 5.5; tg.gain.value = vol * 0.5; tr.connect(tg); tg.connect(g.gain);
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + len * 0.4); g.gain.linearRampToValueAtTime(0.0001, t + len);
+        o.connect(g); g.connect(master); o.start(t); o.stop(t + len); tr.start(t); tr.stop(t + len);
+      });
+    }
+    function stab(t, fr, vol) {
+      var g = ctx.createGain(); env(g, t, 0.01, 0.35, vol);
+      var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1400;
+      [fr, fr * 1.4983, fr * 1.189].forEach(function (f) { var o = ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.connect(lp); o.start(t); o.stop(t + 0.4); });
+      lp.connect(g); g.connect(master);
+    }
+    var endHit = t0 + Math.max(INTRO + 0.5, total - OUTRO), i, tt;
+    if (kind === "suspense") {
+      drone(55, 0.5); drone(82.4, 0.18);
+      hit(t0 + 0.05, 0.9); hit(t0 + INTRO, 0.6); hit(endHit, 0.8);
+      for (i = 5; i < total - 6; i += 5) eerie(t0 + i, 4, 0.035);
+      for (tt = 3; tt < total - 5; tt += 4) thump(t0 + tt, 0.35);
+      if (total > 8) riser(t0 + total - OUTRO - 4.2, 4.2, 0.25);
+    } else if (kind === "tension") {
+      drone(49, 0.45);
+      var sw = ctx.createOscillator(), sg = ctx.createGain(); sw.type = "sine";
+      sw.frequency.setValueAtTime(110, t0); sw.frequency.exponentialRampToValueAtTime(520, t0 + total); sg.gain.value = 0.07;
+      sw.connect(sg); sg.connect(master); sw.start(t0); sw.stop(t0 + total);
+      tt = 0.2; while (tt < total - 1) { tick(t0 + tt, 0.35); tt += Math.max(0.22, 0.75 - tt / total * 0.55); }
+      hit(t0 + 0.05, 0.8); hit(t0 + INTRO, 0.5); hit(endHit, 0.8);
+      if (total > 8) riser(t0 + total - OUTRO - 4, 4, 0.28);
+    } else if (kind === "heartbeat") {
+      drone(45, 0.3);
+      tt = 0.4; while (tt < total - 1) {
+        var bpm = 62 + 38 * (tt / total); var period = 60 / bpm;
+        thump(t0 + tt, 0.9); thump(t0 + tt + 0.2, 0.6); tt += period;
+      }
+      hit(t0 + 0.05, 0.8); hit(endHit, 0.8);
+      eerie(t0 + 2, Math.max(3, total - 5), 0.03);
+    } else if (kind === "breaking") {
+      drone(55, 0.25);
+      var n = 0; for (tt = 0.2; tt < total - 1; tt += 0.5) {
+        var o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
+        o.type = "sawtooth"; o.frequency.value = (n % 8 === 7) ? 146.8 : 110; lp.type = "lowpass"; lp.frequency.value = 700;
+        env(g, t0 + tt, 0.01, 0.22, (n % 4 === 0) ? 0.5 : 0.3); o.connect(lp); lp.connect(g); g.connect(master); o.start(t0 + tt); o.stop(t0 + tt + 0.3);
+        n++;
+      }
+      for (tt = 0.1; tt < total - 2; tt += 4) stab(t0 + tt, 220, 0.22);
+      hit(t0 + 0.05, 0.9); hit(endHit, 0.8);
+      if (total > 7) riser(t0 + total - OUTRO - 3, 3, 0.3);
+    }
+  }
+  function loadOwn(ctx) {
+    var f = $("own").files && $("own").files[0]; if (!f) return Promise.resolve(null);
+    if (ownBuf) return Promise.resolve(ownBuf);
+    return f.arrayBuffer().then(function (ab) { return new Promise(function (res, rej) { ctx.decodeAudioData(ab, res, rej); }); }).then(function (b) { ownBuf = b; return b; }).catch(function () { return null; });
+  }
+
+  var prevCtx = null;
+  $("prevsnd").addEventListener("click", function () {
+    var kind = $("sound").value; if (kind === "none" || kind === "own") return;
+    try { if (prevCtx) prevCtx.close(); } catch (e) {}
+    var AC = window.AudioContext || window.webkitAudioContext; prevCtx = new AC();
+    synth(prevCtx, prevCtx.destination, 5, kind, prevCtx.currentTime + 0.05);
+  });
+
+  /* ------------ Drawing ------------ */
+  function cover(g, src, sw, sh, zoom, dx) {
+    if (!sw || !sh) return;
+    var s = Math.max(W / sw, H / sh) * (zoom || 1), w = sw * s, h = sh * s;
+    g.drawImage(src, (W - w) / 2 + (dx || 0), (H - h) / 2, w, h);
+  }
+  function wrap(g, text, maxW, maxLines) {
+    var words = String(text).split(/\s+/), lines = [], cur = "";
+    words.forEach(function (w) {
+      var test = cur ? cur + " " + w : w;
+      if (g.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else { cur = test; }
+    });
+    if (cur) lines.push(cur);
+    if (lines.length > maxLines) { lines = lines.slice(0, maxLines); lines[maxLines - 1] += "…"; }
+    return lines;
+  }
+  var FONT = '"Noto Sans Bengali","Noto Serif Bengali","IBM Plex Sans",system-ui,sans-serif';
+  function ease(x) { x = Math.max(0, Math.min(1, x)); return 1 - Math.pow(1 - x, 3); }
+
+  function drawIntro(g, p, tm) {
+    var gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0B2A63"); gr.addColorStop(1, "#04143A");
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    var a = ease(tm / 0.8), sz = 260 * (0.8 + 0.2 * a);
+    g.globalAlpha = a; if (seal.complete && seal.naturalWidth) g.drawImage(seal, W / 2 - sz / 2, 330, sz, sz); g.globalAlpha = 1;
+    var a2 = ease((tm - 0.5) / 0.7);
+    g.globalAlpha = a2; g.textAlign = "center"; g.fillStyle = "#fff"; g.font = "800 52px " + FONT; g.fillText("THE INSIDE REPORT", W / 2, 700);
+    g.fillStyle = "#D2A53A"; g.font = "800 60px " + FONT; g.fillText("BD", W / 2, 770);
+    g.fillRect(W / 2 - 150 * a2, 805, 300 * a2, 4);
+    g.fillStyle = "#B4BBCB"; g.font = "500 28px " + FONT; g.fillText(t("tag"), W / 2, 870);
+    g.globalAlpha = 1; g.textAlign = "left";
+  }
+  function drawOutro(g, tm) {
+    var gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0B2A63"); gr.addColorStop(1, "#04143A");
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    var a = ease(tm / 0.7);
+    g.globalAlpha = a; if (seal.complete && seal.naturalWidth) g.drawImage(seal, W / 2 - 110, 380, 220, 220);
+    g.textAlign = "center"; g.fillStyle = "#fff"; g.font = "800 50px " + FONT; g.fillText(t("out1"), W / 2, 700);
+    g.fillStyle = "#D2A53A"; g.font = "700 34px " + FONT; g.fillText(t("out2"), W / 2, 765);
+    g.fillRect(W / 2 - 120, 800, 240, 4);
+    g.fillStyle = "#B4BBCB"; g.font = "500 26px " + FONT; g.fillText("THE INSIDE REPORT BD", W / 2, 860);
+    g.globalAlpha = 1; g.textAlign = "left";
+  }
+  function drawOverlay(g, st, tm, segDur, idx, tot) {
+    var preset = st.preset;
+    // vignette + bottom gradient
+    var bg = g.createLinearGradient(0, H * 0.45, 0, H); bg.addColorStop(0, "rgba(4,20,58,0)"); bg.addColorStop(1, "rgba(4,20,58,0.92)");
+    g.fillStyle = bg; g.fillRect(0, H * 0.45, W, H * 0.55);
+    var tg = g.createLinearGradient(0, 0, 0, 260); tg.addColorStop(0, "rgba(4,20,58,0.75)"); tg.addColorStop(1, "rgba(4,20,58,0)");
+    g.fillStyle = tg; g.fillRect(0, 0, W, 260);
+    // seal + brand
+    if (seal.complete && seal.naturalWidth) g.drawImage(seal, 28, 28, 84, 84);
+    g.fillStyle = "#fff"; g.font = "800 26px " + FONT; g.fillText("THE INSIDE REPORT", 126, 66);
+    g.fillStyle = "#D2A53A"; g.fillText("BD", 126, 98);
+    // breaking tag
+    if (preset === "brk") {
+      var pulse = 0.75 + 0.25 * Math.sin(tm * 6);
+      g.fillStyle = "#D32F2F"; g.fillRect(W - 250, 40, 222, 56); g.fillStyle = "#fff"; g.globalAlpha = pulse;
+      g.beginPath(); g.arc(W - 228, 68, 8, 0, 7); g.fill(); g.globalAlpha = 1;
+      g.font = "800 30px " + FONT; g.fillText(st.kicker, W - 208, 79);
+    }
+    // text block
+    var a = ease(tm / 0.7), slide = (1 - a) * 60;
+    g.save(); g.globalAlpha = a; g.translate(0, slide);
+    var y = H - 150;
+    g.font = "800 52px " + FONT;
+    var lines = wrap(g, st.title, W - 90, 4), lh = 66, top = y - lines.length * lh - (st.subt ? 54 : 0);
+    if (preset !== "brk") {
+      g.font = "800 26px " + FONT; var kw = g.measureText(st.kicker).width + 36;
+      g.fillStyle = "#D2A53A"; g.fillRect(45, top - 78, kw, 46); g.fillStyle = "#071E4A"; g.fillText(st.kicker, 63, top - 44);
+    }
+    g.fillStyle = "#fff"; g.font = "800 52px " + FONT;
+    lines.forEach(function (l, i) { g.fillText(l, 45, top + i * lh + 40); });
+    if (st.subt) { g.fillStyle = "#E8D9A8"; g.font = "500 30px " + FONT; g.fillText(wrap(g, st.subt, W - 90, 1)[0], 45, top + lines.length * lh + 30); }
+    g.restore();
+    // gold line + progress
+    g.fillStyle = "#D2A53A"; g.fillRect(0, H - 14, W * (idx / tot), 8);
+  }
+
+  /* ------------ Make ------------ */
+  function pickMime() {
+    var c = ["video/mp4;codecs=avc1.42E01E,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"];
+    for (var i = 0; i < c.length; i++) { try { if (MediaRecorder.isTypeSupported(c[i])) return c[i]; } catch (e) {} }
+    return "";
+  }
+  function status(msg, warn) { $("status").textContent = msg; $("status").className = "note" + (warn ? " warn" : ""); }
+
+  $("make").addEventListener("click", function () {
+    if (busy) return;
+    if (!items.length) { status(t("none"), true); return; }
+    if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { status(t("noRec"), true); return; }
+    busy = true; $("make").disabled = true; $("dl").className = "btn primary hide"; $("out").style.display = "none";
+    var maxc = parseFloat($("maxc").value) || 5, keep = $("keep").value === "1";
+    var preset = $("preset").value, soundKind = $("sound").value;
+    var st = { preset: preset, kicker: t("k")[preset], title: $("title").value.trim() || t("defTitle"), subt: $("subt").value.trim() };
+
+    var segs = [{ type: "intro", dur: INTRO }];
+    items.forEach(function (it) {
+      var d = it.kind === "video" ? Math.max(1.5, Math.min(it.dur || maxc, maxc)) : Math.min(4, maxc);
+      segs.push({ type: "clip", it: it, dur: d });
+    });
+    segs.push({ type: "outro", dur: OUTRO });
+    var total = 0; segs.forEach(function (s) { s.start = total; total += s.dur; });
+
+    var AC = window.AudioContext || window.webkitAudioContext, actx = new AC();
+    var adest = actx.createMediaStreamDestination();
+    var canvas = $("stage"), g = canvas.getContext("2d");
+    canvas.style.display = "block"; $("bar").style.display = "block";
+    status(t("working"));
+
+    var srcNodes = {};
+    var pre = loadOwn(actx);
+    Promise.resolve(soundKind === "own" ? pre : null).then(function (buf) {
+      var t0 = actx.currentTime + 0.2;
+      if (soundKind === "own" && buf) {
+        var bs = actx.createBufferSource(), bg = actx.createGain(); bs.buffer = buf; bs.loop = true;
+        bg.gain.setValueAtTime(0.0001, t0); bg.gain.exponentialRampToValueAtTime(0.8, t0 + 1);
+        bg.gain.setValueAtTime(0.8, t0 + Math.max(1.1, total - 1.4)); bg.gain.exponentialRampToValueAtTime(0.0001, t0 + total);
+        bs.connect(bg); bg.connect(adest); bs.start(t0); bs.stop(t0 + total);
+      } else if (soundKind !== "none" && soundKind !== "own") {
+        synth(actx, adest, total, soundKind, t0);
+      }
+      if (keep) {
+        items.forEach(function (it, i) {
+          if (it.kind !== "video") return;
+          try { var s = actx.createMediaElementSource(it.el), vg = actx.createGain(); vg.gain.value = 0.9; s.connect(vg); vg.connect(adest); it.el.muted = false; srcNodes[i] = s; } catch (e) {}
+        });
+      }
+      var vs = canvas.captureStream(FPS);
+      adest.stream.getAudioTracks().forEach(function (tr) { vs.addTrack(tr); });
+      var mime = pickMime(), rec;
+      try { rec = new MediaRecorder(vs, mime ? { mimeType: mime, videoBitsPerSecond: 4000000, audioBitsPerSecond: 128000 } : {}); } catch (e) { rec = new MediaRecorder(vs); }
+      var chunks = [];
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function () {
+        var type = (rec.mimeType || mime || "video/webm").split(";")[0];
+        var blob = new Blob(chunks, { type: type });
+        var url = URL.createObjectURL(blob);
+        var ext = /mp4/.test(type) ? "mp4" : "webm";
+        var d = new Date(), pad = function (n) { return (n < 10 ? "0" : "") + n; };
+        var name = "inside-report-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + pad(d.getHours()) + pad(d.getMinutes()) + "." + ext;
+        var out = $("out"); out.src = url; out.style.display = "block";
+        $("dl").href = url; $("dl").download = name; $("dl").className = "btn primary";
+        status(t("done")); canvas.style.display = "none"; $("bar").style.display = "none";
+        items.forEach(function (it) { if (it.kind === "video") { try { it.el.pause(); } catch (e) {} } });
+        try { actx.close(); } catch (e) {}
+        busy = false; $("make").disabled = false;
+      };
+      rec.start(250);
+
+      var cur = -1, startMs = performance.now();
+      function enter(i) {
+        var s = segs[i];
+        if (s.type === "clip" && s.it.kind === "video") { try { s.it.el.currentTime = 0; s.it.el.muted = !keep; var p = s.it.el.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+      }
+      function leave(i) { var s = segs[i]; if (s && s.type === "clip" && s.it.kind === "video") { try { s.it.el.pause(); } catch (e) {} } }
+      function frame() {
+        var tm = (performance.now() - startMs) / 1000;
+        if (tm >= total) {
+          leave(cur); $("bar").firstChild.style.width = "100%";
+          setTimeout(function () { try { rec.stop(); } catch (e) {} }, 300); return;
+        }
+        var i = 0; while (i < segs.length - 1 && tm >= segs[i].start + segs[i].dur) i++;
+        if (i !== cur) { leave(cur); cur = i; enter(i); }
+        var s = segs[i], lt = tm - s.start;
+        g.fillStyle = "#000"; g.fillRect(0, 0, W, H);
+        if (s.type === "intro") { drawIntro(g, lt / s.dur, lt); }
+        else if (s.type === "outro") { drawOutro(g, lt); }
+        else {
+          var it = s.it, zoom = 1 + 0.06 * (lt / s.dur);
+          if (preset === "inv" || preset === "ten" || preset === "fact") { try { g.filter = preset === "ten" ? "grayscale(.5) contrast(1.15) brightness(.85)" : "grayscale(.3) contrast(1.1)"; } catch (e) {} }
+          if (it.kind === "video") cover(g, it.el, it.el.videoWidth, it.el.videoHeight, 1.0);
+          else cover(g, it.el, it.w, it.h, zoom);
+          try { g.filter = "none"; } catch (e) {}
+          if (preset === "ten") { g.fillStyle = "rgba(20,0,0,0.18)"; g.fillRect(0, 0, W, H); }
+          drawOverlay(g, st, lt, s.dur, tm - INTRO, total - INTRO);
+        }
+        $("bar").firstChild.style.width = Math.min(100, tm / total * 100) + "%";
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    });
+  });
+
+  paint();
+})();
+</script>
+<script>
+(function(){ var standalone=(matchMedia("(display-mode: standalone)").matches)||navigator.standalone; if(!standalone||!/Android/i.test(navigator.userAgent))return;
+document.addEventListener("click",function(e){ var a=e.target.closest("a[href]"); if(!a)return; var u; try{u=new URL(a.href,location.href);}catch(x){return;}
+if(u.origin===location.origin||!/^https?:$/.test(u.protocol))return; e.preventDefault();
+location.href="intent://"+u.host+u.pathname+u.search+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(u.href)+";end"; },true); })();
+</script>
+</body>
+</html>
