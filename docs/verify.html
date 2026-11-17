@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify — The Inside Report BD</title>
+<meta name="theme-color" content="#0e1620">
+<style>
+:root { --bg:#f3f5f8; --panel:#fff; --ink:#14202e; --muted:#5a6877; --rule:#d8dee6; --accent:#1d4f91; --ok:#1f8a4c; --warn:#b7791f; --bad:#c8321e; }
+html[data-theme="dark"] { --bg:#0e1620; --panel:#15202d; --ink:#e7edf4; --muted:#9aa8b8; --rule:#263444; --accent:#6aa6ec; --ok:#4cc27d; --warn:#f2b84b; --bad:#ff6a52; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 "IBM Plex Sans","Noto Sans Bengali",system-ui,sans-serif; }
+html[lang="bn"] body { font-size:17px; }
+.wrap { max-width:720px; margin:0 auto; padding:14px 16px 60px; }
+.top { display:flex; gap:8px; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; }
+a, button, label.btn { font:inherit; color:inherit; }
+.btn, button { border:1px solid var(--rule); background:var(--panel); border-radius:8px; padding:8px 14px; min-height:40px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
+.btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+html[data-theme="dark"] .btn.primary { color:#0e1620; }
+h1 { font-size:22px; margin:6px 0 2px; }
+h2 { font-size:15px; margin:0 0 10px; letter-spacing:.04em; color:var(--muted); text-transform:uppercase; }
+.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+.card { background:var(--panel); border:1px solid var(--rule); border-radius:12px; padding:14px; margin-bottom:14px; }
+#prev { display:none; width:100%; max-height:420px; object-fit:contain; border-radius:8px; background:#0a1220; margin-top:10px; }
+.meta { width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
+.meta td { padding:6px 4px; border-top:1px solid var(--rule); vertical-align:top; overflow-wrap:anywhere; }
+.meta td:first-child { color:var(--muted); width:38%; }
+.note { color:var(--muted); font-size:13px; margin:8px 0 0; }
+.warn { color:var(--warn); }
+.eng { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+.eng a { justify-content:center; text-align:center; }
+input[type=url], textarea { width:100%; border:1px solid var(--rule); background:var(--bg); color:var(--ink); border-radius:8px; padding:10px 12px; font:inherit; }
+textarea { min-height:70px; resize:vertical; }
+.chk { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px solid var(--rule); }
+.chk:first-of-type { border-top:0; }
+.chk input { width:22px; height:22px; margin-top:3px; flex:none; }
+.verd { display:grid; grid-template-columns:1fr; gap:8px; margin-top:8px; }
+.verd button[aria-pressed="true"] { outline:3px solid var(--accent); }
+.v-ok { border-color:var(--ok)!important; } .v-wip { border-color:var(--warn)!important; } .v-bad { border-color:var(--bad)!important; }
+.hide { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="btn" href="./" id="back"></a>
+    <div style="display:flex;gap:8px">
+      <button type="button" id="lang"></button>
+      <button type="button" id="thm"></button>
+    </div>
+  </div>
+  <h1 id="h1"></h1>
+  <p class="sub" id="sub"></p>
+
+  <section class="card">
+    <h2 id="s1"></h2>
+    <label class="btn primary" for="file" id="pick"></label>
+    <input type="file" id="file" accept="image/*" class="hide">
+    <img id="prev" alt="">
+    <table class="meta" id="meta"></table>
+    <p class="note" id="metaNote"></p>
+  </section>
+
+  <section class="card">
+    <h2 id="s2"></h2>
+    <p class="note" id="revNote" style="margin-top:0"></p>
+    <div class="eng">
+      <a class="btn" target="_blank" rel="noopener" href="https://lens.google.com/">Google Lens ↗</a>
+      <a class="btn" target="_blank" rel="noopener" href="https://tineye.com/">TinEye ↗</a>
+      <a class="btn" target="_blank" rel="noopener" href="https://yandex.com/images/">Yandex ↗</a>
+      <a class="btn" target="_blank" rel="noopener" href="https://www.bing.com/visualsearch">Bing ↗</a>
+    </div>
+    <p class="note" id="urlNote"></p>
+    <input type="url" id="imgurl" placeholder="https://…jpg">
+    <div class="eng" id="urlBtns">
+      <a class="btn" id="u1" target="_blank" rel="noopener">Google Lens (URL) ↗</a>
+      <a class="btn" id="u2" target="_blank" rel="noopener">TinEye (URL) ↗</a>
+      <a class="btn" id="u3" target="_blank" rel="noopener">Yandex (URL) ↗</a>
+      <a class="btn" id="u4" target="_blank" rel="noopener">Bing (URL) ↗</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 id="s3"></h2>
+    <div id="list"></div>
+    <p class="note" id="s3note"></p>
+  </section>
+
+  <section class="card">
+    <h2 id="s4"></h2>
+    <div class="verd" id="verd"></div>
+    <textarea id="notes"></textarea>
+    <div style="margin-top:10px"><button type="button" id="copy" class="btn primary"></button></div>
+    <p class="note" id="s4note"></p>
+  </section>
+</div>
+
+<script>
+(function () {
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  var lang = store("iir-lang") === "en" ? "en" : "bn";
+  var T = {
+    bn: {
+      back: "← নিউজ ডেস্ক", h1: "🔍 যাচাই কিট", sub: "ছবি বা পোস্টার সত্য কি না নিজে যাচাই করুন। অ্যাপ রায় দেয় না, যাচাইয়ের সরঞ্জাম দেয়।",
+      s1: "১. ছবি দিন", pick: "📷 ছবি বেছে নিন", s2: "২. উল্টো ছবি খুঁজুন",
+      revNote: "নিচের যেকোনো একটা খুলে সেখানে একই ছবিটা আবার দিন। পুরনো ছবি নতুন বলে চালানো হচ্ছে কি না এভাবে ধরা পড়ে।",
+      urlNote: "ছবির সরাসরি লিংক থাকলে এখানে বসান, তাহলে আপলোড ছাড়াই খুঁজবে:",
+      s3: "৩. যাচাই তালিকা", s3note: "সবগুলোতে টিক না পড়া পর্যন্ত “ভুয়া” বা “সত্য” বলবেন না।",
+      s4: "৪. আপনার সিদ্ধান্ত", notes: "নোট: কী পেলেন, কোন সূত্র…", copy: "📋 রিপোর্ট কপি করুন", copied: "কপি হয়েছে ✓",
+      s4note: "এটা আপনার নিজের সিদ্ধান্ত। প্রচারের আগে অন্তত দুটো স্বাধীন সূত্রে মিলিয়ে নিন।",
+      v: ["✔ যাচাইকৃত", "⏳ যাচাই চলছে", "✖ ভুয়া / বিভ্রান্তিকর"],
+      checks: ["আসল উৎস পেয়েছি (কে প্রথম প্রকাশ করেছে)", "উল্টো ছবি খুঁজে পুরনো কপি পাইনি বা তারিখ মিলেছে", "তারিখ আর জায়গা ঘটনার সাথে মেলে", "অন্তত দুটো স্বাধীন সূত্র একই কথা বলছে", "ছবিতে কাটাকুটি বা সম্পাদনার চিহ্ন নেই (ছায়া, লেখা, কিনারা)", "সরকারি বা সংশ্লিষ্ট পক্ষের বক্তব্য দেখেছি"],
+      f_name: "ফাইলের নাম", f_size: "আকার", f_dim: "মাপ", f_mod: "ফাইলের তারিখ", f_make: "ক্যামেরা", f_taken: "ছবি তোলার সময়", f_soft: "সফটওয়্যার", f_gps: "লোকেশন (GPS)",
+      noExif: "এই ছবিতে লুকানো তথ্য (EXIF) নেই। Facebook, WhatsApp, Telegram ছবি পাঠালে এসব মুছে ফেলে, তাই না থাকাটা স্বাভাবিক, সন্দেহের প্রমাণ নয়।",
+      hasExif: "ছবির লুকানো তথ্য পাওয়া গেছে। তবে এটা সহজেই বদলানো যায়, তাই একা এর ওপর ভরসা করবেন না।",
+      soft: "সফটওয়্যারের নাম থাকলে ছবিটা সম্পাদিত হতে পারে।", rep: "যাচাই রিপোর্ট", file: "ফাইল", res: "সিদ্ধান্ত", chk: "তালিকা", none: "—"
+    },
+    en: {
+      back: "← News desk", h1: "🔍 Verify kit", sub: "Check an image or poster yourself. The app gives tools, not a verdict.",
+      s1: "1. Add the image", pick: "📷 Choose image", s2: "2. Reverse image search",
+      revNote: "Open any one below and upload the same image there. This catches old photos passed off as new.",
+      urlNote: "If you have a direct image link, paste it to search without uploading:",
+      s3: "3. Checklist", s3note: "Don't call it fake or true until everything is ticked.",
+      s4: "4. Your decision", notes: "Notes: what you found, sources…", copy: "📋 Copy report", copied: "Copied ✓",
+      s4note: "This is your own call. Confirm with at least two independent sources before publishing.",
+      v: ["✔ Verified", "⏳ Under verification", "✖ False / misleading"],
+      checks: ["Found the original source (who published first)", "Reverse search found no older copy, or dates match", "Date and place match the event", "At least two independent sources agree", "No signs of editing (shadows, text, edges)", "Checked the official / involved party's statement"],
+      f_name: "File name", f_size: "Size", f_dim: "Dimensions", f_mod: "File date", f_make: "Camera", f_taken: "Taken", f_soft: "Software", f_gps: "Location (GPS)",
+      noExif: "No hidden data (EXIF). Facebook, WhatsApp and Telegram strip it, so absence is normal and not proof of anything.",
+      hasExif: "Hidden data found. It is easy to change, so never rely on it alone.",
+      soft: "A software name can mean the image was edited.", rep: "Verification report", file: "File", res: "Verdict", chk: "Checklist", none: "—"
+    }
+  };
+  var verdict = -1, checks = [];
+  var $ = function (id) { return document.getElementById(id); };
+  function t(k) { return T[lang][k]; }
+
+  function paint() {
+    document.documentElement.lang = lang;
+    $("back").textContent = t("back"); $("h1").textContent = t("h1"); $("sub").textContent = t("sub");
+    $("s1").textContent = t("s1"); $("pick").textContent = t("pick"); $("s2").textContent = t("s2");
+    $("revNote").textContent = t("revNote"); $("urlNote").textContent = t("urlNote");
+    $("s3").textContent = t("s3"); $("s3note").textContent = t("s3note");
+    $("s4").textContent = t("s4"); $("notes").placeholder = t("notes"); $("copy").textContent = t("copy"); $("s4note").textContent = t("s4note");
+    $("lang").textContent = lang === "bn" ? "English" : "বাংলা";
+    $("thm").textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "☀️" : "🌙";
+    var l = $("list"); l.textContent = "";
+    t("checks").forEach(function (c, i) {
+      var row = document.createElement("label"); row.className = "chk";
+      var cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = !!checks[i];
+      cb.addEventListener("change", function () { checks[i] = cb.checked; });
+      var sp = document.createElement("span"); sp.textContent = c;
+      row.appendChild(cb); row.appendChild(sp); l.appendChild(row);
+    });
+    var v = $("verd"); v.textContent = "";
+    var cls = ["v-ok", "v-wip", "v-bad"];
+    t("v").forEach(function (name, i) {
+      var b = document.createElement("button"); b.type = "button"; b.className = cls[i]; b.textContent = name;
+      b.setAttribute("aria-pressed", String(verdict === i));
+      b.addEventListener("click", function () { verdict = i; paint(); });
+      v.appendChild(b);
+    });
+    if (lastMeta) showMeta(lastMeta);
+  }
+
+  /* ---- minimal EXIF reader (JPEG) ---- */
+  function readExif(buf) {
+    var out = {}, v = new DataView(buf);
+    if (v.byteLength < 4 || v.getUint16(0) !== 0xFFD8) return out;
+    var p = 2;
+    while (p + 4 < v.byteLength) {
+      var mk = v.getUint16(p), len = v.getUint16(p + 2);
+      if (mk === 0xFFE1 && v.getUint32(p + 4) === 0x45786966) { parse(p + 10); break; }
+      if ((mk & 0xFF00) !== 0xFF00) break;
+      p += 2 + len;
+    }
+    return out;
+    function parse(s) {
+      var le = v.getUint16(s) === 0x4949;
+      var u16 = function (o) { return v.getUint16(o, le); }, u32 = function (o) { return v.getUint32(o, le); };
+      function str(o, n) { var r = ""; for (var i = 0; i < n; i++) { var c = v.getUint8(o + i); if (!c) break; r += String.fromCharCode(c); } return r.trim(); }
+      function rat(o) { var d = u32(o + 4); return d ? u32(o) / d : 0; }
+      function ifd(off, gps) {
+        var o = s + off, n = u16(o), res = {};
+        for (var i = 0; i < n; i++) {
+          var e = o + 2 + i * 12, tag = u16(e), type = u16(e + 2), cnt = u32(e + 4);
+          var val = (type === 2 && cnt > 4) || type === 5 ? s + u32(e + 8) : e + 8;
+          if (gps) {
+            if (tag === 1 || tag === 3) res[tag] = str(e + 8, 2);
+            if ((tag === 2 || tag === 4) && type === 5) res[tag] = [rat(val), rat(val + 8), rat(val + 16)];
+          } else if (type === 2) { res[tag] = str(val, cnt); }
+          else if (tag === 0x8769 || tag === 0x8825) { res[tag] = u32(e + 8); }
+        }
+        return res;
+      }
+      try {
+        var a = ifd(u32(s + 4), false);
+        if (a[0x010F]) out.make = (a[0x010F] + " " + (a[0x0110] || "")).trim();
+        if (a[0x0131]) out.soft = a[0x0131];
+        if (a[0x8769]) { var b = ifd(a[0x8769], false); if (b[0x9003]) out.taken = b[0x9003]; }
+        if (a[0x8825]) {
+          var g = ifd(a[0x8825], true);
+          if (g[2] && g[4]) {
+            var la = g[2][0] + g[2][1] / 60 + g[2][2] / 3600, lo = g[4][0] + g[4][1] / 60 + g[4][2] / 3600;
+            if (g[1] === "S") la = -la; if (g[3] === "W") lo = -lo;
+            out.gps = la.toFixed(5) + ", " + lo.toFixed(5);
+          }
+        }
+      } catch (e) {}
+    }
+  }
+
+  var lastMeta = null;
+  function showMeta(m) {
+    var rows = [["f_name", m.name], ["f_size", m.size], ["f_dim", m.dim], ["f_mod", m.mod], ["f_make", m.make], ["f_taken", m.taken], ["f_soft", m.soft], ["f_gps", m.gps]];
+    var tb = $("meta"); tb.textContent = "";
+    rows.forEach(function (r) {
+      var tr = document.createElement("tr");
+      var a = document.createElement("td"); a.textContent = t(r[0]);
+      var b = document.createElement("td"); b.textContent = r[1] || t("none");
+      if (r[0] === "f_gps" && r[1]) { var ln = document.createElement("a"); ln.href = "https://www.google.com/maps?q=" + encodeURIComponent(r[1]); ln.target = "_blank"; ln.rel = "noopener"; ln.textContent = r[1] + " ↗"; ln.style.color = "var(--accent)"; b.textContent = ""; b.appendChild(ln); }
+      tr.appendChild(a); tr.appendChild(b); tb.appendChild(tr);
+    });
+    var has = m.make || m.taken || m.soft || m.gps;
+    $("metaNote").textContent = (has ? t("hasExif") : t("noExif")) + (m.soft ? " " + t("soft") : "");
+    $("metaNote").className = "note" + (m.soft ? " warn" : "");
+  }
+
+  $("file").addEventListener("change", function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    var url = URL.createObjectURL(f);
+    var img = $("prev"); img.src = url; img.style.display = "block";
+    var m = { name: f.name, size: (f.size / 1024 > 1024 ? (f.size / 1048576).toFixed(1) + " MB" : Math.round(f.size / 1024) + " KB"), mod: f.lastModified ? new Date(f.lastModified).toLocaleString(lang === "bn" ? "bn-BD" : "en-GB") : "" };
+    img.onload = function () { m.dim = img.naturalWidth + " × " + img.naturalHeight; lastMeta = m; showMeta(m); };
+    var rd = new FileReader();
+    rd.onload = function () { var x = readExif(rd.result); m.make = x.make; m.taken = x.taken; m.soft = x.soft; m.gps = x.gps; lastMeta = m; showMeta(m); };
+    rd.readAsArrayBuffer(f.slice(0, 262144));
+    lastMeta = m; showMeta(m);
+  });
+
+  function urls() {
+    var u = encodeURIComponent($("imgurl").value.trim()), ok = /^https?:\/\//i.test($("imgurl").value.trim());
+    var map = { u1: "https://lens.google.com/uploadbyurl?url=", u2: "https://tineye.com/search?url=", u3: "https://yandex.com/images/search?rpt=imageview&url=", u4: "https://www.bing.com/images/search?view=detailv2&iss=sbi&q=imgurl:" };
+    Object.keys(map).forEach(function (k) { var a = $(k); if (ok) { a.href = map[k] + u; a.style.opacity = 1; a.style.pointerEvents = "auto"; } else { a.removeAttribute("href"); a.style.opacity = .45; a.style.pointerEvents = "none"; } });
+  }
+  $("imgurl").addEventListener("input", urls); urls();
+
+  $("copy").addEventListener("click", function () {
+    var lines = ["🔍 " + t("rep") + " — The Inside Report BD", ""];
+    if (lastMeta) lines.push(t("file") + ": " + lastMeta.name + (lastMeta.dim ? " (" + lastMeta.dim + ")" : ""));
+    lines.push(t("res") + ": " + (verdict >= 0 ? t("v")[verdict] : t("none")), "", t("chk") + ":");
+    t("checks").forEach(function (c, i) { lines.push((checks[i] ? "☑ " : "☐ ") + c); });
+    if ($("notes").value.trim()) lines.push("", $("notes").value.trim());
+    var txt = lines.join("\n"), btn = $("copy");
+    function done() { btn.textContent = t("copied"); setTimeout(function () { btn.textContent = t("copy"); }, 1800); }
+    try { navigator.clipboard.writeText(txt).then(done, function () { window.prompt("Copy:", txt); }); } catch (e) { window.prompt("Copy:", txt); }
+  });
+
+  $("lang").addEventListener("click", function () { lang = lang === "bn" ? "en" : "bn"; store("iir-lang", lang); paint(); });
+  $("thm").addEventListener("click", function () {
+    var d = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", d); store("iir-theme", d); paint();
+  });
+  document.documentElement.setAttribute("data-theme", store("iir-theme") === "light" ? "light" : "dark");
+  paint();
+})();
+</script>
+<script>
+(function(){ var standalone=(matchMedia("(display-mode: standalone)").matches)||navigator.standalone; if(!standalone||!/Android/i.test(navigator.userAgent))return;
+document.addEventListener("click",function(e){ var a=e.target.closest("a[href]"); if(!a)return; var u; try{u=new URL(a.href,location.href);}catch(x){return;}
+if(u.origin===location.origin||!/^https?:$/.test(u.protocol))return; e.preventDefault();
+location.href="intent://"+u.host+u.pathname+u.search+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(u.href)+";end"; },true); })();
+</script>
+</body>
+</html>
