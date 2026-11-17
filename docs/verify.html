@@ -106,7 +106,7 @@ textarea { min-height:70px; resize:vertical; }
       revNote: "নিচের যেকোনো একটা খুলে সেখানে একই ছবিটা আবার দিন। পুরনো ছবি নতুন বলে চালানো হচ্ছে কি না এভাবে ধরা পড়ে।",
       urlNote: "ছবির সরাসরি লিংক থাকলে এখানে বসান, তাহলে আপলোড ছাড়াই খুঁজবে:",
       s3: "৩. যাচাই তালিকা", s3note: "সবগুলোতে টিক না পড়া পর্যন্ত “ভুয়া” বা “সত্য” বলবেন না।",
-      s4: "৪. আপনার সিদ্ধান্ত", notes: "নোট: কী পেলেন, কোন সূত্র…", copy: "📋 রিপোর্ট কপি করুন", copied: "কপি হয়েছে ✓",
+      s4: "৪. আপনার সিদ্ধান্ত", notes: "নোট: কী পেলেন, কোন সূত্র…", copy: "📋 রিপোর্ট কপি করুন", copied: "কপি হয়েছে ✓", noVerd: "⚠️ সিদ্ধান্ত বাছেননি। তবুও কপি করতে আবার চাপুন।",
       s4note: "এটা আপনার নিজের সিদ্ধান্ত। প্রচারের আগে অন্তত দুটো স্বাধীন সূত্রে মিলিয়ে নিন।",
       v: ["✔ যাচাইকৃত", "⏳ যাচাই চলছে", "✖ ভুয়া / বিভ্রান্তিকর"],
       checks: ["আসল উৎস পেয়েছি (কে প্রথম প্রকাশ করেছে)", "উল্টো ছবি খুঁজে পুরনো কপি পাইনি বা তারিখ মিলেছে", "তারিখ আর জায়গা ঘটনার সাথে মেলে", "অন্তত দুটো স্বাধীন সূত্র একই কথা বলছে", "ছবিতে কাটাকুটি বা সম্পাদনার চিহ্ন নেই (ছায়া, লেখা, কিনারা)", "সরকারি বা সংশ্লিষ্ট পক্ষের বক্তব্য দেখেছি"],
@@ -121,7 +121,7 @@ textarea { min-height:70px; resize:vertical; }
       revNote: "Open any one below and upload the same image there. This catches old photos passed off as new.",
       urlNote: "If you have a direct image link, paste it to search without uploading:",
       s3: "3. Checklist", s3note: "Don't call it fake or true until everything is ticked.",
-      s4: "4. Your decision", notes: "Notes: what you found, sources…", copy: "📋 Copy report", copied: "Copied ✓",
+      s4: "4. Your decision", notes: "Notes: what you found, sources…", copy: "📋 Copy report", copied: "Copied ✓", noVerd: "⚠️ No decision chosen. Tap again to copy anyway.",
       s4note: "This is your own call. Confirm with at least two independent sources before publishing.",
       v: ["✔ Verified", "⏳ Under verification", "✖ False / misleading"],
       checks: ["Found the original source (who published first)", "Reverse search found no older copy, or dates match", "Date and place match the event", "At least two independent sources agree", "No signs of editing (shadows, text, edges)", "Checked the official / involved party's statement"],
@@ -245,7 +245,13 @@ textarea { min-height:70px; resize:vertical; }
   }
   $("imgurl").addEventListener("input", urls); urls();
 
+  var warned = false;
   $("copy").addEventListener("click", function () {
+    if (verdict < 0 && !warned) {
+      warned = true; $("s4note").textContent = t("noVerd"); $("s4note").className = "note warn";
+      $("verd").scrollIntoView({ behavior: "smooth", block: "center" }); return;
+    }
+    warned = false; $("s4note").className = "note"; $("s4note").textContent = t("s4note");
     var lines = ["🔍 " + t("rep") + " — The Inside Report BD", ""];
     if (lastMeta) lines.push(t("file") + ": " + lastMeta.name + (lastMeta.dim ? " (" + lastMeta.dim + ")" : ""));
     lines.push(t("res") + ": " + (verdict >= 0 ? t("v")[verdict] : t("none")), "", t("chk") + ":");
