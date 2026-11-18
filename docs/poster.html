@@ -28,7 +28,9 @@ input[type=range] { width:100%; }
 label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); }
 .row { display:flex; gap:8px; flex-wrap:wrap; }
 .row > * { flex:1 1 140px; }
-#cv { display:block; width:100%; max-width:420px; margin:0 auto; border-radius:8px; background:#000; border:1px solid var(--rule); }
+#cv { display:block; width:auto; height:auto; max-width:100%; max-height:34vh; margin:0 auto; border-radius:8px; background:#000; border:1px solid var(--rule); }
+.top { align-items:center; }
+.top .row > * { flex:0 0 auto; }
 .hide { display:none; }
 .sticky { position:sticky; top:0; z-index:5; background:var(--bg); padding:6px 0; }
 </style>
@@ -58,7 +60,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
 
   <section class="card">
     <h2 id="s2"></h2>
-    <label class="f" id="lt"></label><textarea id="title" maxlength="200"></textarea>
+    <label class="f" id="lt"></label><textarea id="title" maxlength="400"></textarea>
     <label class="f" id="ls"></label><input type="text" id="subt" maxlength="140">
     <label class="f" id="lsrc"></label><input type="text" id="src" maxlength="80">
   </section>
@@ -90,6 +92,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
       <div><label class="f" id="lp"></label><select id="preset"></select></div>
       <div><label class="f" id="lstamp"></label><select id="stamp"></select></div>
       <div><label class="f" id="lsz"></label><select id="size"></select></div>
+      <div><label class="f" id="lanc"></label><select id="anchor"></select></div>
     </div>
   </section>
 
@@ -109,7 +112,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     bn: { back: "← নিউজ ডেস্ক", h1: "🖼️ পোস্টার মেকার", sub: "ছবি দিন, শিরোনাম লিখুন, প্রিসেট বাছুন। পোস্টার নিজে সেজে যাবে।",
       s1: "১. ছবি", pick: "📷 ছবি বেছে নিন", clr: "ছবি সরান", lz: "জুম", lx: "ডানে-বামে", ly: "ওপরে-নিচে", ld: "নিচের ছায়া (লেখা পরিষ্কার করতে)",
       s2: "২. লেখা", lt: "শিরোনাম", ls: "ছোট লাইন (ঐচ্ছিক)", lsrc: "সূত্র / তারিখ (ঐচ্ছিক)",
-      lbg: "ব্যাকগ্রাউন্ড (ছবি না থাকলে)", bgs: { plain: "সাদামাটা নেভি", grid: "ডিজিটাল গ্রিড", spot: "স্পটলাইট", net: "জাল / নেটওয়ার্ক", grain: "গ্রেইন (দানা)", stripes: "তির্যক দাগ" },
+      lanc: "লেখার অবস্থান", ancs: { fixed: "ট্যাগ স্থির, লেখা নিচের দিকে বাড়ে", bottom: "নিচে স্থির, লেখা ওপরের দিকে বাড়ে" }, lbg: "ব্যাকগ্রাউন্ড (ছবি না থাকলে)", bgs: { plain: "সাদামাটা নেভি", grid: "ডিজিটাল গ্রিড", spot: "স্পটলাইট", net: "জাল / নেটওয়ার্ক", grain: "গ্রেইন (দানা)", stripes: "তির্যক দাগ" },
       sAI: "২ক. AI দিয়ে ছবি বানান (বাইরের ফ্রি সেবা)", laid: "কেমন ছবি চান (বাংলায় লিখুন)", aiph: "যেমন: রাতের অন্ধকারে পুরনো গুদাম, ভেতরে আলো", aicopy: "📋 প্রম্পট কপি করুন", aicopied: "কপি হয়েছে ✓", llab: "ছবির লেবেল", labs: { none: "কোনো লেবেল নয়", ai: "প্রতীকী ছবি (AI)" },
       ainote: "প্রম্পট কপি করে নিচের যেকোনো সেবা খুলে বসান, ছবি বানিয়ে ফোনে নামান, তারপর ওপরের “ছবি বেছে নিন” দিয়ে পোস্টারে দিন। AI-র ছবি আসল ঘটনার ছবি বলে ছাপবেন না, লেবেল রাখুন।", aitag: "প্রতীকী ছবি (AI)",
       sL: "৩. আপনার লোগো", lpick: "🏷️ লোগো বেছে নিন", lclr: "লোগো সরান", lLpos: "লোগোর জায়গা", lLsz: "লোগোর মাপ", lLseal: "Inside Report-এর সিল",
@@ -124,7 +127,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     en: { back: "← News desk", h1: "🖼️ Poster maker", sub: "Add an image, type a headline, pick a preset. The poster lays itself out.",
       s1: "1. Image", pick: "📷 Choose image", clr: "Remove image", lz: "Zoom", lx: "Left–right", ly: "Up–down", ld: "Bottom shade (for readable text)",
       s2: "2. Text", lt: "Headline", ls: "Sub-line (optional)", lsrc: "Source / date (optional)",
-      lbg: "Background (when no photo)", bgs: { plain: "Plain navy", grid: "Digital grid", spot: "Spotlight", net: "Network", grain: "Grain", stripes: "Diagonal stripes" },
+      lanc: "Text position", ancs: { fixed: "Tag fixed, text grows downward", bottom: "Bottom fixed, text grows upward" }, lbg: "Background (when no photo)", bgs: { plain: "Plain navy", grid: "Digital grid", spot: "Spotlight", net: "Network", grain: "Grain", stripes: "Diagonal stripes" },
       sAI: "2a. Make an image with AI (outside free tools)", laid: "Describe the image you want", aiph: "e.g. an old warehouse at night, light inside", aicopy: "📋 Copy prompt", aicopied: "Copied ✓", llab: "Image label", labs: { none: "No label", ai: "Symbolic image (AI)" },
       ainote: "Copy the prompt, paste it into any tool below, save the image, then add it above with “Choose image”. Never present AI images as real photos of an event. Keep the label on.", aitag: "SYMBOLIC IMAGE (AI)",
       sL: "3. Your logo", lpick: "🏷️ Choose logo", lclr: "Remove logo", lLpos: "Logo position", lLsz: "Logo size", lLseal: "Inside Report seal",
@@ -150,8 +153,8 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
   }
   function paint() {
     document.documentElement.lang = lang;
-    ["back","h1","sub","s1","clr","sL","lbg","sAI","laid","llab","ainote","lclr","lLpos","lLsz","lLseal","lz","lx","ly","ld","s2","lt","ls","lsrc","s3","lp","lstamp","lsz","dl","share","n"].forEach(function (k) { $(k).textContent = t(k); });
-    $("pick").textContent = t("pick"); fill($("bgstyle"), t("bgs"), true); fill($("ailab"), t("labs"), true); $("aidesc").placeholder = t("aiph"); $("aicopy").textContent = t("aicopy"); $("lpick").textContent = t("lpick"); fill($("lpos"), t("lpos"), true); fill($("sealon"), t("seal"), true);
+    ["back","h1","sub","s1","clr","sL","lbg","lanc","sAI","laid","llab","ainote","lclr","lLpos","lLsz","lLseal","lz","lx","ly","ld","s2","lt","ls","lsrc","s3","lp","lstamp","lsz","dl","share","n"].forEach(function (k) { $(k).textContent = t(k); });
+    $("pick").textContent = t("pick"); fill($("bgstyle"), t("bgs"), true); fill($("anchor"), t("ancs"), true); fill($("ailab"), t("labs"), true); $("aidesc").placeholder = t("aiph"); $("aicopy").textContent = t("aicopy"); $("lpick").textContent = t("lpick"); fill($("lpos"), t("lpos"), true); fill($("sealon"), t("seal"), true);
     fill($("preset"), t("p"), true); fill($("stamp"), t("st"), true); fill($("size"), t("sz"), true);
     $("title").placeholder = t("tit");
     $("lang").textContent = lang === "bn" ? "English" : "বাংলা";
@@ -245,18 +248,23 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     if (preset === "brk") { g.fillStyle = "#D32F2F"; g.fillRect(0, sy + ss + 22 * s, W, 8 * s); }
     // text block (fit)
     var title = $("title").value.trim() || t("tit"), subt = $("subt").value.trim();
-    var maxW = W - pad * 2, footerH = 90 * s, avail = H * (wide ? 0.38 : 0.46) - (subt ? 70 * s : 0), fs = (wide ? 58 : 92) * s, lines, lh;
-    for (; fs >= 36 * s; fs -= 4 * s) { g.font = "800 " + fs + "px " + FONT; lines = wrap(g, title, maxW); lh = fs * 1.28; if (lines.length * lh <= avail) break; }
-    var blockH = lines.length * lh, bottom = H - footerH - 30 * s - (subt ? 62 * s : 0), top = bottom - blockH;
-    var kick = t("k")[preset];
-    g.font = "800 " + 30 * s + "px " + FONT; var kw = g.measureText(kick).width + 44 * s, kh = 58 * s;
-    g.fillStyle = preset === "brk" ? "#D32F2F" : "#D2A53A"; g.fillRect(pad, top - kh - 22 * s, kw, kh);
-    g.fillStyle = preset === "brk" ? "#fff" : "#071E4A"; g.fillText(kick, pad + 22 * s, top - 22 * s - 17 * s);
+    var maxW = W - pad * 2, footerH = 90 * s, bottomLimit = H - footerH - 30 * s - (subt ? 62 * s : 0);
+    var kick = t("k")[preset], kh = 58 * s, fixedTop = $("anchor").value !== "bottom";
+    var kickY = fixedTop ? H * (wide ? 0.4 : 0.5) : 0;
+    var avail = fixedTop ? bottomLimit - (kickY + kh + 22 * s) : H * (wide ? 0.38 : 0.46) - (subt ? 70 * s : 0);
+    var fs = (wide ? 58 : 92) * s, lines, lh, minFs = 30 * s;
+    for (; fs >= minFs; fs -= 2 * s) { g.font = "800 " + fs + "px " + FONT; lines = wrap(g, title, maxW); lh = fs * 1.28; if (lines.length * lh <= avail) break; }
+    if (fs < minFs) { fs = minFs; g.font = "800 " + fs + "px " + FONT; lines = wrap(g, title, maxW); lh = fs * 1.28; }
+    var blockH = lines.length * lh, top = fixedTop ? kickY + kh + 22 * s : bottomLimit - blockH;
+    if (!fixedTop) kickY = top - kh - 22 * s;
+    g.font = "800 " + 30 * s + "px " + FONT; var kw = g.measureText(kick).width + 44 * s;
+    g.fillStyle = preset === "brk" ? "#D32F2F" : "#D2A53A"; g.fillRect(pad, kickY, kw, kh);
+    g.fillStyle = preset === "brk" ? "#fff" : "#071E4A"; g.fillText(kick, pad + 22 * s, kickY + kh - 17 * s);
     g.font = "800 " + fs + "px " + FONT; g.fillStyle = "#fff";
     g.shadowColor = "rgba(0,0,0,.55)"; g.shadowBlur = 12 * s;
     lines.forEach(function (l, i) { g.fillText(l, pad, top + i * lh + fs * 0.9); });
     g.shadowBlur = 0;
-    if (subt) { g.fillStyle = "#E8D9A8"; g.font = "500 " + 36 * s + "px " + FONT; g.fillText(wrap(g, subt, maxW)[0], pad, bottom + 52 * s); }
+    if (subt) { g.fillStyle = "#E8D9A8"; g.font = "500 " + 36 * s + "px " + FONT; g.fillText(wrap(g, subt, maxW)[0], pad, top + blockH + 52 * s); }
     // stamp
     var st = $("stamp").value;
     if (st && st !== "none") {
@@ -284,7 +292,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     g.fillText("theinsidereportbd.blogspot.com  ·  YouTube @theinsidereportbd", W / 2, H - footerH / 2 + 18 * s); g.textAlign = "left";
   }
 
-  ["title","subt","src","zoom","px","py","dark","preset","stamp","size","lpos","lsz","sealon","bgstyle","ailab"].forEach(function (id) { $(id).addEventListener("input", draw); $(id).addEventListener("change", draw); });
+  ["title","subt","src","zoom","px","py","dark","preset","stamp","size","lpos","lsz","sealon","bgstyle","ailab","anchor"].forEach(function (id) { $(id).addEventListener("input", draw); $(id).addEventListener("change", draw); });
   $("img").addEventListener("change", function () {
     var f = this.files && this.files[0]; this.value = ""; if (!f) return;
     var im = new Image(); im.onload = function () { photo = im; draw(); }; im.src = URL.createObjectURL(f);
