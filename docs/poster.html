@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poster Maker — The Inside Report BD</title>
+<meta name="theme-color" content="#0e1620">
+<style>
+:root { --bg:#f3f5f8; --panel:#fff; --ink:#14202e; --muted:#5a6877; --rule:#d8dee6; --accent:#1d4f91; }
+html[data-theme="dark"] { --bg:#0e1620; --panel:#15202d; --ink:#e7edf4; --muted:#9aa8b8; --rule:#263444; --accent:#6aa6ec; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 "IBM Plex Sans","Noto Sans Bengali",system-ui,sans-serif; }
+html[lang="bn"] body { font-size:17px; }
+.wrap { max-width:720px; margin:0 auto; padding:14px 16px 70px; }
+.top { display:flex; gap:8px; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; }
+a, button, select, input, textarea, label.btn { font:inherit; color:inherit; }
+.btn, button, select { border:1px solid var(--rule); background:var(--panel); border-radius:8px; padding:8px 14px; min-height:40px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
+.btn.primary, button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+html[data-theme="dark"] .btn.primary, html[data-theme="dark"] button.primary { color:#0e1620; }
+h1 { font-size:22px; margin:6px 0 2px; }
+h2 { font-size:15px; margin:0 0 10px; letter-spacing:.04em; color:var(--muted); text-transform:uppercase; }
+.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+.card { background:var(--panel); border:1px solid var(--rule); border-radius:12px; padding:14px; margin-bottom:14px; }
+.note { color:var(--muted); font-size:13px; margin:8px 0 0; }
+input[type=text], textarea, select { width:100%; border:1px solid var(--rule); background:var(--bg); border-radius:8px; padding:10px 12px; }
+textarea { min-height:78px; resize:vertical; }
+input[type=range] { width:100%; }
+label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); }
+.row { display:flex; gap:8px; flex-wrap:wrap; }
+.row > * { flex:1 1 140px; }
+#cv { display:block; width:100%; max-width:420px; margin:0 auto; border-radius:8px; background:#000; border:1px solid var(--rule); }
+.hide { display:none; }
+.sticky { position:sticky; top:0; z-index:5; background:var(--bg); padding:6px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="btn" href="./" id="back"></a>
+    <div class="row" style="flex:0 0 auto"><button type="button" id="lang"></button><button type="button" id="thm"></button></div>
+  </div>
+  <h1 id="h1"></h1>
+  <p class="sub" id="sub"></p>
+
+  <section class="card sticky"><canvas id="cv" width="1080" height="1350"></canvas></section>
+
+  <section class="card">
+    <h2 id="s1"></h2>
+    <label class="btn primary" for="img" id="pick"></label>
+    <input type="file" id="img" accept="image/*" class="hide">
+    <button type="button" id="clr"></button>
+    <label class="f" id="lz"></label><input type="range" id="zoom" min="100" max="300" value="100">
+    <div class="row"><div><label class="f" id="lx"></label><input type="range" id="px" min="-100" max="100" value="0"></div>
+    <div><label class="f" id="ly"></label><input type="range" id="py" min="-100" max="100" value="0"></div></div>
+    <label class="f" id="ld"></label><input type="range" id="dark" min="0" max="90" value="55">
+  </section>
+
+  <section class="card">
+    <h2 id="s2"></h2>
+    <label class="f" id="lt"></label><textarea id="title" maxlength="200"></textarea>
+    <label class="f" id="ls"></label><input type="text" id="subt" maxlength="140">
+    <label class="f" id="lsrc"></label><input type="text" id="src" maxlength="80">
+  </section>
+
+  <section class="card">
+    <h2 id="s3"></h2>
+    <div class="row">
+      <div><label class="f" id="lp"></label><select id="preset"></select></div>
+      <div><label class="f" id="lstamp"></label><select id="stamp"></select></div>
+      <div><label class="f" id="lsz"></label><select id="size"></select></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row"><button type="button" class="primary" id="dl"></button><button type="button" id="share"></button></div>
+    <p class="note" id="n"></p>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  var $ = function (id) { return document.getElementById(id); };
+  var lang = store("iir-lang") === "en" ? "en" : "bn";
+  var T = {
+    bn: { back: "← নিউজ ডেস্ক", h1: "🖼️ পোস্টার মেকার", sub: "ছবি দিন, শিরোনাম লিখুন, প্রিসেট বাছুন। পোস্টার নিজে সেজে যাবে।",
+      s1: "১. ছবি", pick: "📷 ছবি বেছে নিন", clr: "ছবি সরান", lz: "জুম", lx: "ডানে-বামে", ly: "ওপরে-নিচে", ld: "নিচের ছায়া (লেখা পরিষ্কার করতে)",
+      s2: "২. লেখা", lt: "শিরোনাম", ls: "ছোট লাইন (ঐচ্ছিক)", lsrc: "সূত্র / তারিখ (ঐচ্ছিক)",
+      s3: "৩. ধরন", lp: "প্রিসেট", lstamp: "যাচাইয়ের ছাপ", lsz: "মাপ",
+      dl: "⬇ ছবি ডাউনলোড", share: "📤 শেয়ার", n: "ছাপ (✔ ✖ ⏳) আপনার নিজের যাচাইয়ের ফল। সব যাচাই শেষে দিন, প্রচারের আগে অন্তত দুটো সূত্রে মিলিয়ে নিন।",
+      p: { inv: "🕵️ ইনভেস্টিগেশন", brk: "🔴 ব্রেকিং", fact: "✔ ফ্যাক্ট-চেক", news: "📰 সাধারণ খবর" },
+      k: { inv: "ইনভেস্টিগেশন", brk: "ব্রেকিং", fact: "ফ্যাক্ট-চেক", news: "বিশেষ প্রতিবেদন" },
+      st: { none: "কোনো ছাপ নয়", ok: "✔ যাচাইকৃত", wip: "⏳ যাচাই চলছে", bad: "✖ ভুয়া" }, stl: { ok: "যাচাইকৃত", wip: "যাচাই চলছে", bad: "ভুয়া" },
+      sz: { p45: "পোস্ট ৪:৫ (১০৮০×১৩৫০)", sq: "স্কয়ার (১০৮০×১০৮০)", st: "স্টোরি ৯:১৬ (১০৮০×১৯২০)", fb: "ফেসবুক লিংক (১২০০×৬৩০)" },
+      tit: "শিরোনাম এখানে লিখুন", tag: "সত্য · ন্যায়বিচার · স্বচ্ছতা · জনস্বার্থ" },
+    en: { back: "← News desk", h1: "🖼️ Poster maker", sub: "Add an image, type a headline, pick a preset. The poster lays itself out.",
+      s1: "1. Image", pick: "📷 Choose image", clr: "Remove image", lz: "Zoom", lx: "Left–right", ly: "Up–down", ld: "Bottom shade (for readable text)",
+      s2: "2. Text", lt: "Headline", ls: "Sub-line (optional)", lsrc: "Source / date (optional)",
+      s3: "3. Style", lp: "Preset", lstamp: "Verification stamp", lsz: "Size",
+      dl: "⬇ Download image", share: "📤 Share", n: "Stamps (✔ ✖ ⏳) are your own verification result. Apply only after checking, with at least two sources.",
+      p: { inv: "🕵️ Investigation", brk: "🔴 Breaking", fact: "✔ Fact-check", news: "📰 News" },
+      k: { inv: "INVESTIGATION", brk: "BREAKING", fact: "FACT-CHECK", news: "SPECIAL REPORT" },
+      st: { none: "No stamp", ok: "✔ Verified", wip: "⏳ Under verification", bad: "✖ False" }, stl: { ok: "VERIFIED", wip: "CHECKING", bad: "FALSE" },
+      sz: { p45: "Post 4:5 (1080×1350)", sq: "Square (1080×1080)", st: "Story 9:16 (1080×1920)", fb: "Facebook link (1200×630)" },
+      tit: "Type your headline", tag: "Truth · Justice · Transparency · Public Interest" }
+  };
+  function t(k) { return T[lang][k]; }
+  var SIZES = { p45: [1080, 1350], sq: [1080, 1080], st: [1080, 1920], fb: [1200, 630] };
+  var FONT = '"Noto Sans Bengali","Noto Serif Bengali","IBM Plex Sans",system-ui,sans-serif';
+  var seal = new Image(); seal.onload = draw; seal.src = "icon-192.png";
+  var photo = null;
+
+  function fill(sel, obj, keep) {
+    var cur = sel.value; sel.textContent = "";
+    Object.keys(obj).forEach(function (k) { var o = document.createElement("option"); o.value = k; o.textContent = obj[k]; sel.appendChild(o); });
+    if (keep && cur) sel.value = cur;
+  }
+  function paint() {
+    document.documentElement.lang = lang;
+    ["back","h1","sub","s1","clr","lz","lx","ly","ld","s2","lt","ls","lsrc","s3","lp","lstamp","lsz","dl","share","n"].forEach(function (k) { $(k).textContent = t(k); });
+    $("pick").textContent = t("pick");
+    fill($("preset"), t("p"), true); fill($("stamp"), t("st"), true); fill($("size"), t("sz"), true);
+    $("title").placeholder = t("tit");
+    $("lang").textContent = lang === "bn" ? "English" : "বাংলা";
+    $("thm").textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "☀️" : "🌙";
+    draw();
+  }
+
+  function wrap(g, text, maxW) {
+    var out = [];
+    String(text).split(/\n/).forEach(function (para) {
+      var words = para.split(/\s+/).filter(Boolean), cur = "";
+      words.forEach(function (w) {
+        var test = cur ? cur + " " + w : w;
+        if (g.measureText(test).width > maxW && cur) { out.push(cur); cur = w; } else { cur = test; }
+      });
+      if (cur) out.push(cur);
+    });
+    return out;
+  }
+  function draw() {
+    var cv = $("cv"), preset = $("preset").value || "inv", sz = SIZES[$("size").value || "p45"];
+    var W = sz[0], H = sz[1];
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    var g = cv.getContext("2d"), s = W / 1080, tall = H > W * 1.2, wide = W > H;
+    g.clearRect(0, 0, W, H);
+    // background
+    var bgG = g.createLinearGradient(0, 0, 0, H); bgG.addColorStop(0, "#0B2A63"); bgG.addColorStop(1, "#04143A");
+    g.fillStyle = bgG; g.fillRect(0, 0, W, H);
+    if (photo) {
+      var z = $("zoom").value / 100, base = Math.max(W / photo.naturalWidth, H / photo.naturalHeight) * z;
+      var w = photo.naturalWidth * base, h = photo.naturalHeight * base;
+      var ox = ($("px").value / 100) * (w - W) / 2, oy = ($("py").value / 100) * (h - H) / 2;
+      try { g.filter = preset === "inv" ? "grayscale(.35) contrast(1.1)" : "none"; } catch (e) {}
+      g.drawImage(photo, (W - w) / 2 - ox, (H - h) / 2 - oy, w, h);
+      try { g.filter = "none"; } catch (e) {}
+    }
+    var dark = $("dark").value / 100;
+    var bg = g.createLinearGradient(0, H * 0.28, 0, H); bg.addColorStop(0, "rgba(4,20,58,0)"); bg.addColorStop(1, "rgba(4,20,58," + (0.35 + dark * 0.65) + ")");
+    g.fillStyle = bg; g.fillRect(0, H * 0.28, W, H * 0.72);
+    var tg = g.createLinearGradient(0, 0, 0, 260 * s); tg.addColorStop(0, "rgba(4,20,58,0.8)"); tg.addColorStop(1, "rgba(4,20,58,0)");
+    g.fillStyle = tg; g.fillRect(0, 0, W, 260 * s);
+    // brand
+    var bk = wide ? 0.7 : 1, pad = 54 * s, sy = 30 * s, ss = 112 * s * bk;
+    if (seal.complete && seal.naturalWidth) g.drawImage(seal, pad, sy, ss, ss);
+    g.textBaseline = "alphabetic"; g.fillStyle = "#fff"; g.font = "800 " + 34 * s * bk + "px " + FONT; g.fillText("THE INSIDE REPORT", pad + ss + 18 * s, sy + 52 * s * bk);
+    g.fillStyle = "#D2A53A"; g.fillText("BD", pad + ss + 18 * s, sy + 94 * s * bk);
+    var src = $("src").value.trim();
+    if (src) { g.textAlign = "right"; g.fillStyle = "#E8D9A8"; g.font = "600 " + 26 * s + "px " + FONT; g.fillText(src, W - pad, sy + 68 * s * bk); g.textAlign = "left"; }
+    // breaking band
+    if (preset === "brk") { g.fillStyle = "#D32F2F"; g.fillRect(0, sy + ss + 22 * s, W, 8 * s); }
+    // text block (fit)
+    var title = $("title").value.trim() || t("tit"), subt = $("subt").value.trim();
+    var maxW = W - pad * 2, footerH = 90 * s, avail = H * (wide ? 0.38 : 0.46) - (subt ? 70 * s : 0), fs = (wide ? 58 : 92) * s, lines, lh;
+    for (; fs >= 36 * s; fs -= 4 * s) { g.font = "800 " + fs + "px " + FONT; lines = wrap(g, title, maxW); lh = fs * 1.28; if (lines.length * lh <= avail) break; }
+    var blockH = lines.length * lh, bottom = H - footerH - 30 * s - (subt ? 62 * s : 0), top = bottom - blockH;
+    var kick = t("k")[preset];
+    g.font = "800 " + 30 * s + "px " + FONT; var kw = g.measureText(kick).width + 44 * s, kh = 58 * s;
+    g.fillStyle = preset === "brk" ? "#D32F2F" : "#D2A53A"; g.fillRect(pad, top - kh - 22 * s, kw, kh);
+    g.fillStyle = preset === "brk" ? "#fff" : "#071E4A"; g.fillText(kick, pad + 22 * s, top - 22 * s - 17 * s);
+    g.font = "800 " + fs + "px " + FONT; g.fillStyle = "#fff";
+    g.shadowColor = "rgba(0,0,0,.55)"; g.shadowBlur = 12 * s;
+    lines.forEach(function (l, i) { g.fillText(l, pad, top + i * lh + fs * 0.9); });
+    g.shadowBlur = 0;
+    if (subt) { g.fillStyle = "#E8D9A8"; g.font = "500 " + 36 * s + "px " + FONT; g.fillText(wrap(g, subt, maxW)[0], pad, bottom + 52 * s); }
+    // stamp
+    var st = $("stamp").value;
+    if (st && st !== "none") {
+      var col = st === "ok" ? "#2E9E5B" : st === "bad" ? "#D32F2F" : "#D99A1E", label = t("stl")[st];
+      g.save(); var ks = wide ? 0.55 : 1; g.translate(W - pad - 190 * s * ks, sy + ss + (wide ? 70 : 190) * s + (wide ? 0 : 70 * s)); g.scale(ks, ks); g.rotate(-0.14);
+      g.font = "800 " + 70 * s + "px " + FONT; var tw = g.measureText(label).width + 70 * s, th = 120 * s;
+      g.fillStyle = "rgba(4,20,58,0.55)"; g.fillRect(-tw / 2, -th / 2, tw, th);
+      g.lineWidth = 10 * s; g.strokeStyle = col; g.strokeRect(-tw / 2, -th / 2, tw, th);
+      g.fillStyle = col; g.textAlign = "center"; g.fillText(label, 0, 24 * s); g.restore(); g.textAlign = "left";
+    }
+    // footer
+    g.fillStyle = "#D2A53A"; g.fillRect(0, H - footerH, W, 6 * s);
+    g.fillStyle = "rgba(4,20,58,0.92)"; g.fillRect(0, H - footerH + 6 * s, W, footerH - 6 * s);
+    g.fillStyle = "#fff"; g.font = "600 " + 27 * s + "px " + FONT; g.textAlign = "center";
+    g.fillText("theinsidereportbd.blogspot.com  ·  YouTube @theinsidereportbd", W / 2, H - footerH / 2 + 18 * s); g.textAlign = "left";
+  }
+
+  ["title","subt","src","zoom","px","py","dark","preset","stamp","size"].forEach(function (id) { $(id).addEventListener("input", draw); $(id).addEventListener("change", draw); });
+  $("img").addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = ""; if (!f) return;
+    var im = new Image(); im.onload = function () { photo = im; draw(); }; im.src = URL.createObjectURL(f);
+  });
+  $("clr").addEventListener("click", function () { photo = null; draw(); });
+  function blob(cb) { $("cv").toBlob(cb, "image/png"); }
+  $("dl").addEventListener("click", function () {
+    blob(function (b) {
+      var a = document.createElement("a"), d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; };
+      a.href = URL.createObjectURL(b); a.download = "inside-report-poster-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + ".png";
+      document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); }, 500);
+    });
+  });
+  $("share").addEventListener("click", function () {
+    blob(function (b) {
+      var f = new File([b], "inside-report-poster.png", { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f] }).catch(function () {}); } else { $("dl").click(); }
+    });
+  });
+  $("lang").addEventListener("click", function () { lang = lang === "bn" ? "en" : "bn"; store("iir-lang", lang); paint(); });
+  $("thm").addEventListener("click", function () {
+    var d = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", d); store("iir-theme", d); paint();
+  });
+  document.documentElement.setAttribute("data-theme", store("iir-theme") === "light" ? "light" : "dark");
+  paint();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+})();
+</script>
+<script>
+(function(){ var standalone=(matchMedia("(display-mode: standalone)").matches)||navigator.standalone; if(!standalone||!/Android/i.test(navigator.userAgent))return;
+document.addEventListener("click",function(e){ var a=e.target.closest("a[href]"); if(!a)return; var u; try{u=new URL(a.href,location.href);}catch(x){return;}
+if(u.origin===location.origin||!/^https?:$/.test(u.protocol))return; e.preventDefault();
+location.href="intent://"+u.host+u.pathname+u.search+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(u.href)+";end"; },true); })();
+</script>
+</body>
+</html>
