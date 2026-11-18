@@ -49,6 +49,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     <label class="btn primary" for="img" id="pick"></label>
     <input type="file" id="img" accept="image/*" class="hide">
     <button type="button" id="clr"></button>
+    <label class="f" id="lbg"></label><select id="bgstyle"></select>
     <label class="f" id="lz"></label><input type="range" id="zoom" min="100" max="300" value="100">
     <div class="row"><div><label class="f" id="lx"></label><input type="range" id="px" min="-100" max="100" value="0"></div>
     <div><label class="f" id="ly"></label><input type="range" id="py" min="-100" max="100" value="0"></div></div>
@@ -60,6 +61,15 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     <label class="f" id="lt"></label><textarea id="title" maxlength="200"></textarea>
     <label class="f" id="ls"></label><input type="text" id="subt" maxlength="140">
     <label class="f" id="lsrc"></label><input type="text" id="src" maxlength="80">
+  </section>
+
+  <section class="card">
+    <h2 id="sAI"></h2>
+    <label class="f" id="laid"></label><textarea id="aidesc" style="min-height:70px"></textarea>
+    <div class="row"><button type="button" id="aicopy"></button></div>
+    <div class="row"><a class="btn" target="_blank" rel="noopener" href="https://www.bing.com/images/create">Bing Image Creator ↗</a><a class="btn" target="_blank" rel="noopener" href="https://chatgpt.com/">ChatGPT ↗</a></div>
+    <label class="f" id="llab"></label><select id="ailab"></select>
+    <p class="note" id="ainote"></p>
   </section>
 
   <section class="card">
@@ -99,6 +109,9 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     bn: { back: "← নিউজ ডেস্ক", h1: "🖼️ পোস্টার মেকার", sub: "ছবি দিন, শিরোনাম লিখুন, প্রিসেট বাছুন। পোস্টার নিজে সেজে যাবে।",
       s1: "১. ছবি", pick: "📷 ছবি বেছে নিন", clr: "ছবি সরান", lz: "জুম", lx: "ডানে-বামে", ly: "ওপরে-নিচে", ld: "নিচের ছায়া (লেখা পরিষ্কার করতে)",
       s2: "২. লেখা", lt: "শিরোনাম", ls: "ছোট লাইন (ঐচ্ছিক)", lsrc: "সূত্র / তারিখ (ঐচ্ছিক)",
+      lbg: "ব্যাকগ্রাউন্ড (ছবি না থাকলে)", bgs: { plain: "সাদামাটা নেভি", grid: "ডিজিটাল গ্রিড", spot: "স্পটলাইট", net: "জাল / নেটওয়ার্ক", grain: "গ্রেইন (দানা)", stripes: "তির্যক দাগ" },
+      sAI: "২ক. AI দিয়ে ছবি বানান (বাইরের ফ্রি সেবা)", laid: "কেমন ছবি চান (বাংলায় লিখুন)", aiph: "যেমন: রাতের অন্ধকারে পুরনো গুদাম, ভেতরে আলো", aicopy: "📋 প্রম্পট কপি করুন", aicopied: "কপি হয়েছে ✓", llab: "ছবির লেবেল", labs: { none: "কোনো লেবেল নয়", ai: "প্রতীকী ছবি (AI)" },
+      ainote: "প্রম্পট কপি করে নিচের যেকোনো সেবা খুলে বসান, ছবি বানিয়ে ফোনে নামান, তারপর ওপরের “ছবি বেছে নিন” দিয়ে পোস্টারে দিন। AI-র ছবি আসল ঘটনার ছবি বলে ছাপবেন না, লেবেল রাখুন।", aitag: "প্রতীকী ছবি (AI)",
       sL: "৩. আপনার লোগো", lpick: "🏷️ লোগো বেছে নিন", lclr: "লোগো সরান", lLpos: "লোগোর জায়গা", lLsz: "লোগোর মাপ", lLseal: "Inside Report-এর সিল",
       lpos: { tr: "ওপরে ডানে", tl: "ওপরে বাঁয়ে", br: "নিচে ডানে", bl: "নিচে বাঁয়ে", mid: "মাঝখানে (ওয়াটারমার্ক)" }, seal: { on: "দেখান", off: "লুকান" },
       s3: "৪. ধরন", lp: "প্রিসেট", lstamp: "যাচাইয়ের ছাপ", lsz: "মাপ",
@@ -111,6 +124,9 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     en: { back: "← News desk", h1: "🖼️ Poster maker", sub: "Add an image, type a headline, pick a preset. The poster lays itself out.",
       s1: "1. Image", pick: "📷 Choose image", clr: "Remove image", lz: "Zoom", lx: "Left–right", ly: "Up–down", ld: "Bottom shade (for readable text)",
       s2: "2. Text", lt: "Headline", ls: "Sub-line (optional)", lsrc: "Source / date (optional)",
+      lbg: "Background (when no photo)", bgs: { plain: "Plain navy", grid: "Digital grid", spot: "Spotlight", net: "Network", grain: "Grain", stripes: "Diagonal stripes" },
+      sAI: "2a. Make an image with AI (outside free tools)", laid: "Describe the image you want", aiph: "e.g. an old warehouse at night, light inside", aicopy: "📋 Copy prompt", aicopied: "Copied ✓", llab: "Image label", labs: { none: "No label", ai: "Symbolic image (AI)" },
+      ainote: "Copy the prompt, paste it into any tool below, save the image, then add it above with “Choose image”. Never present AI images as real photos of an event. Keep the label on.", aitag: "SYMBOLIC IMAGE (AI)",
       sL: "3. Your logo", lpick: "🏷️ Choose logo", lclr: "Remove logo", lLpos: "Logo position", lLsz: "Logo size", lLseal: "Inside Report seal",
       lpos: { tr: "Top right", tl: "Top left", br: "Bottom right", bl: "Bottom left", mid: "Centre (watermark)" }, seal: { on: "Show", off: "Hide" },
       s3: "4. Style", lp: "Preset", lstamp: "Verification stamp", lsz: "Size",
@@ -134,8 +150,8 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
   }
   function paint() {
     document.documentElement.lang = lang;
-    ["back","h1","sub","s1","clr","sL","lclr","lLpos","lLsz","lLseal","lz","lx","ly","ld","s2","lt","ls","lsrc","s3","lp","lstamp","lsz","dl","share","n"].forEach(function (k) { $(k).textContent = t(k); });
-    $("pick").textContent = t("pick"); $("lpick").textContent = t("lpick"); fill($("lpos"), t("lpos"), true); fill($("sealon"), t("seal"), true);
+    ["back","h1","sub","s1","clr","sL","lbg","sAI","laid","llab","ainote","lclr","lLpos","lLsz","lLseal","lz","lx","ly","ld","s2","lt","ls","lsrc","s3","lp","lstamp","lsz","dl","share","n"].forEach(function (k) { $(k).textContent = t(k); });
+    $("pick").textContent = t("pick"); fill($("bgstyle"), t("bgs"), true); fill($("ailab"), t("labs"), true); $("aidesc").placeholder = t("aiph"); $("aicopy").textContent = t("aicopy"); $("lpick").textContent = t("lpick"); fill($("lpos"), t("lpos"), true); fill($("sealon"), t("seal"), true);
     fill($("preset"), t("p"), true); fill($("stamp"), t("st"), true); fill($("size"), t("sz"), true);
     $("title").placeholder = t("tit");
     $("lang").textContent = lang === "bn" ? "English" : "বাংলা";
@@ -168,6 +184,33 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     else { x = W - pad - w; y = 26 * s; }
     return { x: x, y: y, w: w, h: h };
   }
+  function rng(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+  function procBg(g, W, H, s, style) {
+    var r = rng(42), i, j;
+    if (style === "grid") {
+      g.strokeStyle = "rgba(210,165,58,0.10)"; g.lineWidth = 1.5 * s;
+      for (i = 0; i < W; i += 60 * s) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, H); g.stroke(); }
+      for (j = 0; j < H; j += 60 * s) { g.beginPath(); g.moveTo(0, j); g.lineTo(W, j); g.stroke(); }
+      var rg = g.createRadialGradient(W * 0.7, H * 0.3, 0, W * 0.7, H * 0.3, W * 0.8); rg.addColorStop(0, "rgba(106,166,236,0.35)"); rg.addColorStop(1, "rgba(106,166,236,0)"); g.fillStyle = rg; g.fillRect(0, 0, W, H);
+    } else if (style === "spot") {
+      var sg = g.createRadialGradient(W / 2, -H * 0.1, 0, W / 2, H * 0.25, H * 0.9); sg.addColorStop(0, "rgba(255,255,255,0.32)"); sg.addColorStop(0.5, "rgba(120,150,210,0.12)"); sg.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = sg; g.fillRect(0, 0, W, H);
+    } else if (style === "net") {
+      var pts = []; for (i = 0; i < 46; i++) pts.push([r() * W, r() * H * 0.85]);
+      for (i = 0; i < pts.length; i++) for (j = i + 1; j < pts.length; j++) {
+        var d = Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]);
+        if (d < 260 * s) { g.strokeStyle = "rgba(210,165,58," + (0.28 * (1 - d / (260 * s))) + ")"; g.lineWidth = 2 * s; g.beginPath(); g.moveTo(pts[i][0], pts[i][1]); g.lineTo(pts[j][0], pts[j][1]); g.stroke(); }
+      }
+      pts.forEach(function (p) { g.fillStyle = "rgba(232,217,168,0.7)"; g.beginPath(); g.arc(p[0], p[1], 5 * s, 0, 7); g.fill(); });
+    } else if (style === "grain") {
+      for (i = 0; i < 9000; i++) { g.fillStyle = "rgba(255,255,255," + (0.02 + r() * 0.07) + ")"; g.fillRect(r() * W, r() * H, 2 * s, 2 * s); }
+      var vg = g.createRadialGradient(W / 2, H / 2, H * 0.2, W / 2, H / 2, H * 0.85); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.5)"); g.fillStyle = vg; g.fillRect(0, 0, W, H);
+    } else if (style === "stripes") {
+      g.save(); g.rotate(-0.5); g.fillStyle = "rgba(210,165,58,0.07)";
+      for (i = -H; i < W * 1.6; i += 90 * s) g.fillRect(i, -H, 28 * s, H * 3);
+      g.restore();
+    }
+  }
   function draw() {
     var cv = $("cv"), preset = $("preset").value || "inv", sz = SIZES[$("size").value || "p45"];
     var W = sz[0], H = sz[1];
@@ -177,6 +220,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     // background
     var bgG = g.createLinearGradient(0, 0, 0, H); bgG.addColorStop(0, "#0B2A63"); bgG.addColorStop(1, "#04143A");
     g.fillStyle = bgG; g.fillRect(0, 0, W, H);
+    if (!photo) procBg(g, W, H, s, $("bgstyle").value || "plain");
     if (photo) {
       var z = $("zoom").value / 100, base = Math.max(W / photo.naturalWidth, H / photo.naturalHeight) * z;
       var w = photo.naturalWidth * base, h = photo.naturalHeight * base;
@@ -223,6 +267,11 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
       g.lineWidth = 10 * s; g.strokeStyle = col; g.strokeRect(-tw / 2, -th / 2, tw, th);
       g.fillStyle = col; g.textAlign = "center"; g.fillText(label, 0, 24 * s); g.restore(); g.textAlign = "left";
     }
+    if ($("ailab").value === "ai") {
+      g.font = "700 " + 22 * s + "px " + FONT; var lt = t("aitag"), lw2 = g.measureText(lt).width + 28 * s, lh2 = 40 * s;
+      g.fillStyle = "rgba(4,20,58,0.78)"; g.fillRect(W - pad - lw2, H - 90 * s - lh2 - 14 * s, lw2, lh2);
+      g.fillStyle = "#E8D9A8"; g.fillText(lt, W - pad - lw2 + 14 * s, H - 90 * s - 14 * s - 12 * s);
+    }
     // custom logo
     if (logoImg) {
       var lb = logoBox(W, H, s, footerH0(H, s));
@@ -235,7 +284,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     g.fillText("theinsidereportbd.blogspot.com  ·  YouTube @theinsidereportbd", W / 2, H - footerH / 2 + 18 * s); g.textAlign = "left";
   }
 
-  ["title","subt","src","zoom","px","py","dark","preset","stamp","size","lpos","lsz","sealon"].forEach(function (id) { $(id).addEventListener("input", draw); $(id).addEventListener("change", draw); });
+  ["title","subt","src","zoom","px","py","dark","preset","stamp","size","lpos","lsz","sealon","bgstyle","ailab"].forEach(function (id) { $(id).addEventListener("input", draw); $(id).addEventListener("change", draw); });
   $("img").addEventListener("change", function () {
     var f = this.files && this.files[0]; this.value = ""; if (!f) return;
     var im = new Image(); im.onload = function () { photo = im; draw(); }; im.src = URL.createObjectURL(f);
@@ -245,6 +294,12 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     var im = new Image(); im.onload = function () { logoImg = im; draw(); }; im.src = URL.createObjectURL(f);
   });
   $("lclr").addEventListener("click", function () { logoImg = null; draw(); });
+  $("aicopy").addEventListener("click", function () {
+    var d = $("aidesc").value.trim() || "an investigative news scene";
+    var pr = d + ". Symbolic editorial illustration for a news report, dark navy and gold colour palette, dramatic cinematic lighting, high detail, no text, no logos, no real people or faces, vertical composition.";
+    var b = $("aicopy");
+    try { navigator.clipboard.writeText(pr).then(function () { b.textContent = t("aicopied"); setTimeout(function () { b.textContent = t("aicopy"); }, 1600); }); } catch (e) { window.prompt("Copy:", pr); }
+  });
   $("clr").addEventListener("click", function () { photo = null; draw(); });
   function blob(cb) { $("cv").toBlob(cb, "image/png"); }
   $("dl").addEventListener("click", function () {
