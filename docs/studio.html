@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Studio — The Inside Report BD</title>
+<meta name="theme-color" content="#0e1620">
+<style>
+:root { --bg:#f3f5f8; --panel:#fff; --ink:#14202e; --muted:#5a6877; --rule:#d8dee6; --accent:#1d4f91; --warn:#b7791f; --rec:#c8321e; }
+html[data-theme="dark"] { --bg:#0e1620; --panel:#15202d; --ink:#e7edf4; --muted:#9aa8b8; --rule:#263444; --accent:#6aa6ec; --warn:#f2b84b; --rec:#ff6a52; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 "IBM Plex Sans","Noto Sans Bengali",system-ui,sans-serif; }
+html[lang="bn"] body { font-size:17px; }
+.wrap { max-width:720px; margin:0 auto; padding:14px 16px 70px; }
+.top { display:flex; gap:8px; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; }
+a, button, select, input, textarea, label.btn { font:inherit; color:inherit; }
+.btn, button, select { border:1px solid var(--rule); background:var(--panel); border-radius:8px; padding:8px 14px; min-height:42px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
+.btn.primary, button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+html[data-theme="dark"] .btn.primary, html[data-theme="dark"] button.primary { color:#0e1620; }
+button.rec { background:var(--rec); border-color:var(--rec); color:#fff; font-weight:700; }
+button:disabled { opacity:.5; cursor:default; }
+h1 { font-size:22px; margin:6px 0 2px; }
+h2 { font-size:15px; margin:0 0 10px; letter-spacing:.04em; color:var(--muted); text-transform:uppercase; }
+.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+.card { background:var(--panel); border:1px solid var(--rule); border-radius:12px; padding:14px; margin-bottom:14px; }
+.note { color:var(--muted); font-size:13px; margin:8px 0 0; }
+.warn { color:var(--warn); }
+textarea, select, input[type=file] { width:100%; border:1px solid var(--rule); background:var(--bg); border-radius:8px; padding:10px 12px; }
+textarea { min-height:170px; resize:vertical; line-height:1.7; }
+.row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+.row > * { flex:1 1 130px; }
+label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); }
+audio { width:100%; margin-top:8px; }
+.live { color:var(--rec); font-weight:700; }
+#interim { color:var(--muted); font-style:italic; min-height:1.4em; }
+#tp { position:fixed; inset:0; background:#04143A; color:#fff; z-index:50; display:none; flex-direction:column; }
+#tpTop { display:flex; gap:10px; align-items:center; justify-content:space-between; padding:10px 14px; background:#071E4A; }
+#tpView { flex:1; overflow:hidden; position:relative; }
+#tpText { position:absolute; left:0; right:0; top:0; padding:35vh 20px 80vh; font-weight:700; line-height:1.7; text-align:center; white-space:pre-wrap; will-change:transform; }
+#tpLine { position:absolute; left:0; right:0; top:35vh; height:3px; background:#D2A53A; opacity:.7; }
+#tpCount { position:absolute; inset:0; display:none; align-items:center; justify-content:center; font-size:110px; font-weight:800; color:#D2A53A; background:rgba(4,20,58,.85); }
+.hide { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="btn" href="./" id="back"></a>
+    <div class="row" style="margin:0;flex:0 0 auto"><button type="button" id="lang"></button><button type="button" id="thm"></button></div>
+  </div>
+  <h1 id="h1"></h1>
+  <p class="sub" id="sub"></p>
+
+  <section class="card">
+    <h2 id="s1"></h2>
+    <textarea id="script"></textarea>
+    <div class="row">
+      <select id="dlang"><option value="bn-BD"></option><option value="en-US"></option></select>
+      <button type="button" id="dict"></button>
+    </div>
+    <div class="row"><button type="button" id="copy"></button><button type="button" id="clear"></button></div>
+    <p class="note" id="interim"></p>
+    <p class="note" id="n1"></p>
+  </section>
+
+  <section class="card">
+    <h2 id="s2"></h2>
+    <div class="row">
+      <div><label class="f" id="lspd"></label><input type="range" id="spd" min="20" max="140" value="55" style="width:100%"></div>
+      <div><label class="f" id="lfs"></label><input type="range" id="fs" min="26" max="60" value="38" style="width:100%"></div>
+    </div>
+    <div class="row"><button type="button" class="rec" id="recbtn"></button></div>
+    <p class="note" id="n2"></p>
+  </section>
+
+  <section class="card">
+    <h2 id="s3"></h2>
+    <label class="f" id="lsrc"></label>
+    <select id="source"></select>
+    <div id="fileRow" class="hide"><label class="f" id="lfile"></label><input type="file" id="afile" accept="audio/*,video/*"></div>
+    <label class="f" id="llvl"></label>
+    <select id="level"></select>
+    <div class="row"><button type="button" class="primary" id="clean"></button></div>
+    <p class="note" id="cstat"></p>
+    <div id="res" class="hide">
+      <label class="f" id="lbef"></label><audio id="aBefore" controls></audio>
+      <label class="f" id="laft"></label><audio id="aAfter" controls></audio>
+      <div class="row"><a class="btn primary" id="dl"></a></div>
+    </div>
+    <p class="note" id="n3"></p>
+  </section>
+</div>
+
+<div id="tp">
+  <div id="tpTop"><span id="tpTime" class="live">● 00:00</span><div style="display:flex;gap:8px"><button type="button" id="tpPause"></button><button type="button" class="rec" id="tpStop"></button></div></div>
+  <div id="tpView"><div id="tpText"></div><div id="tpLine"></div><div id="tpCount"></div></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  var $ = function (id) { return document.getElementById(id); };
+  var lang = store("iir-lang") === "en" ? "en" : "bn";
+  var T = {
+    bn: { back: "← নিউজ ডেস্ক", h1: "🎙️ ভয়েস স্টুডিও", sub: "বলে লিখুন, স্ক্রিপ্ট দেখে নিজের গলায় রেকর্ড করুন, আর অডিও পরিষ্কার করুন।",
+      s1: "১. স্ক্রিপ্ট", ph: "এখানে স্ক্রিপ্ট লিখুন, পেস্ট করুন, বা নিচের মাইক চেপে বলুন…", dBn: "বাংলা", dEn: "English",
+      dictOn: "🗣️ বলা শুরু করুন", dictOff: "⏹ বলা থামান", copy: "📋 কপি", clear: "🗑 মুছুন", copied: "কপি হয়েছে ✓",
+      n1: "বলা লেখায় রূপ দিতে ইন্টারনেট লাগে, আর আপনার কণ্ঠ Google-এর সার্ভারে যায়। সংবেদনশীল সূত্রের কিছু বলবেন না। নাম, জায়গা আর সংখ্যা ভুল হতে পারে, তাই লেখাটা পড়ে ঠিক করে নিন।",
+      dNo: "এই ব্রাউজারে বলে লেখার সুবিধা নেই। Android Chrome ব্যবহার করুন।", dErr: "মাইক বা নেটওয়ার্কের সমস্যা। মাইকের অনুমতি আর ইন্টারনেট দেখুন।", listening: "শুনছি…",
+      s2: "২. স্ক্রিপ্ট দেখে রেকর্ড", lspd: "পড়ার গতি", lfs: "অক্ষরের মাপ", rec: "🎙️ রেকর্ড শুরু (টেলিপ্রম্পটার)",
+      n2: "রেকর্ড চাপলে ৩-২-১ গোনা হবে, তারপর লেখা ধীরে ধীরে ওপরে উঠবে। সোনালি রেখার কাছে যে লাইন, সেটা পড়ুন। ফোন মুখের কাছে (২০-৩০ সেমি), শান্ত ঘরে রাখুন।",
+      pause: "⏸ থামান", resume: "▶ চালান", stop: "⏹ শেষ", noScript: "আগে স্ক্রিপ্ট লিখুন।", micErr: "মাইক পাওয়া যায়নি। অনুমতি দিন।",
+      s3: "৩. অডিও ক্লিয়ারেন্স", lsrc: "কোন অডিও?", src1: "এইমাত্র রেকর্ড করা", src2: "ফোন থেকে ফাইল", lfile: "অডিও ফাইল", llvl: "পরিষ্কারের মাত্রা",
+      lv: { light: "হালকা (কণ্ঠ বেশি স্বাভাবিক)", normal: "মাঝারি (সুপারিশ)", strong: "কড়া (নয়েজ বেশি হলে)" },
+      clean: "🧹 অডিও পরিষ্কার করুন", noAudio: "আগে রেকর্ড করুন বা একটা ফাইল বাছুন।", working: "পরিষ্কার হচ্ছে… একটু অপেক্ষা করুন", done: "হয়ে গেছে ✓ শুনে দেখুন।", decErr: "এই ফাইল পড়া যায়নি।",
+      lbef: "আগে", laft: "পরে (পরিষ্কার)", dl: "⬇ পরিষ্কার অডিও ডাউনলোড (WAV)",
+      n3: "পরে 🎬 ভিডিও মেকারে “নিজের গান/অডিও ফাইল” ঘরে এই ফাইলটা দিতে পারবেন। ভাষা পরিষ্কার না হলে আবার, কাছ থেকে, শান্ত জায়গায় রেকর্ড করুন, কোনো ফিল্টারই খারাপ রেকর্ডিং পুরোপুরি বাঁচাতে পারে না." },
+    en: { back: "← News desk", h1: "🎙️ Voice studio", sub: "Dictate text, read a script in your own voice, and clean up the audio.",
+      s1: "1. Script", ph: "Type or paste a script here, or tap the mic below and speak…", dBn: "Bangla", dEn: "English",
+      dictOn: "🗣️ Start speaking", dictOff: "⏹ Stop", copy: "📋 Copy", clear: "🗑 Clear", copied: "Copied ✓",
+      n1: "Speech-to-text needs internet and your voice goes to Google's servers. Don't dictate sensitive source material. Names, places and numbers can be wrong, so proofread.",
+      dNo: "Speech-to-text isn't available in this browser. Use Android Chrome.", dErr: "Mic or network problem. Check mic permission and internet.", listening: "Listening…",
+      s2: "2. Record from the script", lspd: "Reading speed", lfs: "Text size", rec: "🎙️ Start recording (teleprompter)",
+      n2: "A 3-2-1 countdown, then the text scrolls up. Read the line at the gold marker. Hold the phone 20–30 cm away in a quiet room.",
+      pause: "⏸ Pause", resume: "▶ Resume", stop: "⏹ Done", noScript: "Write a script first.", micErr: "Microphone not available. Allow permission.",
+      s3: "3. Audio cleanup", lsrc: "Which audio?", src1: "Just recorded", src2: "File from phone", lfile: "Audio file", llvl: "Cleanup strength",
+      lv: { light: "Light (most natural)", normal: "Medium (recommended)", strong: "Strong (noisy rooms)" },
+      clean: "🧹 Clean audio", noAudio: "Record something or choose a file first.", working: "Cleaning… please wait", done: "Done ✓ Have a listen.", decErr: "Couldn't read this file.",
+      lbef: "Before", laft: "After (cleaned)", dl: "⬇ Download cleaned audio (WAV)",
+      n3: "Use this file in 🎬 Video maker under “your own music / audio file”. No filter can fully rescue a bad recording, so re-record close to the mic in a quiet place if needed." }
+  };
+  function t(k) { return T[lang][k]; }
+
+  var rawBlob = null, listening = false, recog = null, base = "";
+
+  function paint() {
+    document.documentElement.lang = lang;
+    ["back","h1","sub","s1","n1","s2","n2","s3","n3","copy","clear","dl","lspd","lfs","lsrc","lfile","llvl","lbef","laft","clean"].forEach(function (k) { $(k).textContent = t(k); });
+    $("script").placeholder = t("ph");
+    $("dlang").options[0].textContent = t("dBn"); $("dlang").options[1].textContent = t("dEn");
+    $("dict").textContent = listening ? t("dictOff") : t("dictOn");
+    $("recbtn").textContent = t("rec"); $("tpStop").textContent = t("stop"); $("tpPause").textContent = paused ? t("resume") : t("pause");
+    var s = $("source"), cur = s.value; s.textContent = "";
+    [["rec", t("src1")], ["file", t("src2")]].forEach(function (p) { var o = document.createElement("option"); o.value = p[0]; o.textContent = p[1]; s.appendChild(o); }); if (cur) s.value = cur;
+    var l = $("level"), cl = l.value || "normal"; l.textContent = "";
+    ["light", "normal", "strong"].forEach(function (k) { var o = document.createElement("option"); o.value = k; o.textContent = t("lv")[k]; l.appendChild(o); }); l.value = cl;
+    $("fileRow").className = $("source").value === "file" ? "" : "hide";
+    $("lang").textContent = lang === "bn" ? "English" : "বাংলা";
+    $("thm").textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "☀️" : "🌙";
+  }
+
+  /* ---------- Dictation ---------- */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  $("dict").addEventListener("click", function () {
+    if (!SR) { $("interim").textContent = t("dNo"); $("interim").className = "note warn"; return; }
+    if (listening) { listening = false; try { recog.stop(); } catch (e) {} paint(); $("interim").textContent = ""; return; }
+    recog = new SR(); recog.lang = $("dlang").value; recog.continuous = true; recog.interimResults = true;
+    base = $("script").value;
+    recog.onresult = function (e) {
+      var fin = "", interim = "";
+      for (var i = e.resultIndex; i < e.results.length; i++) { var r = e.results[i]; if (r.isFinal) fin += r[0].transcript; else interim += r[0].transcript; }
+      if (fin) { var sep = base && !/\s$/.test(base) ? " " : ""; base = base + sep + fin.trim(); $("script").value = base; }
+      $("interim").className = "note"; $("interim").textContent = interim ? "… " + interim : t("listening");
+    };
+    recog.onerror = function (e) { if (e.error === "no-speech" || e.error === "aborted") return; listening = false; $("interim").className = "note warn"; $("interim").textContent = t("dErr"); paint(); };
+    recog.onend = function () { if (listening) { try { recog.start(); } catch (e) {} } };
+    listening = true; try { recog.start(); } catch (e) {} paint(); $("interim").className = "note"; $("interim").textContent = t("listening");
+  });
+  $("script").addEventListener("input", function () { base = this.value; });
+  $("copy").addEventListener("click", function () {
+    var b = $("copy");
+    try { navigator.clipboard.writeText($("script").value).then(function () { b.textContent = t("copied"); setTimeout(function () { b.textContent = t("copy"); }, 1600); }); } catch (e) { $("script").select(); }
+  });
+  $("clear").addEventListener("click", function () { $("script").value = ""; base = ""; });
+
+  /* ---------- Teleprompter + record ---------- */
+  var stream = null, mr = null, chunks = [], paused = false, pos = 0, last = 0, tpRun = false, startT = 0, pausedAcc = 0, pauseAt = 0, raf = 0;
+  function fmt(s) { s = Math.floor(s); return (s < 10 ? "0" : "") + Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); }
+  $("recbtn").addEventListener("click", function () {
+    var txt = $("script").value.trim(); if (!txt) { $("n2").textContent = t("noScript"); $("n2").className = "note warn"; return; }
+    if (listening) { $("dict").click(); }
+    $("n2").className = "note"; $("n2").textContent = t("n2");
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true } }).then(function (s) {
+      stream = s; chunks = [];
+      var mime = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].filter(function (m) { try { return MediaRecorder.isTypeSupported(m); } catch (e) { return false; } })[0];
+      mr = mime ? new MediaRecorder(s, { mimeType: mime }) : new MediaRecorder(s);
+      mr.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      mr.onstop = function () {
+        stream.getTracks().forEach(function (tr) { tr.stop(); });
+        rawBlob = new Blob(chunks, { type: (mr.mimeType || "audio/webm").split(";")[0] });
+        $("source").value = "rec"; $("fileRow").className = "hide";
+        $("aBefore").src = URL.createObjectURL(rawBlob); $("res").className = "hide";
+        $("cstat").className = "note"; $("cstat").textContent = ""; $("clean").scrollIntoView({ behavior: "smooth", block: "center" });
+      };
+      var tp = $("tp"), tx = $("tpText"); tx.textContent = txt; tx.style.fontSize = $("fs").value + "px"; tx.style.transform = "translateY(0)";
+      tp.style.display = "flex"; paused = false; pos = 0; paint();
+      var c = $("tpCount"), n = 3; c.style.display = "flex"; c.textContent = n;
+      var iv = setInterval(function () {
+        n--; if (n > 0) { c.textContent = n; return; }
+        clearInterval(iv); c.style.display = "none"; mr.start(500); tpRun = true; startT = performance.now(); pausedAcc = 0; last = performance.now(); raf = requestAnimationFrame(tick);
+      }, 1000);
+    }).catch(function () { $("n2").className = "note warn"; $("n2").textContent = t("micErr"); });
+  });
+  function tick(now) {
+    if (!tpRun) return;
+    if (!paused) {
+      pos += (now - last) / 1000 * $("spd").value; var max = $("tpText").scrollHeight - $("tpView").clientHeight * 0.4;
+      $("tpText").style.transform = "translateY(" + (-Math.min(pos, max)) + "px)";
+      $("tpTime").textContent = "● " + fmt((now - startT - pausedAcc) / 1000);
+    }
+    last = now; raf = requestAnimationFrame(tick);
+  }
+  $("tpPause").addEventListener("click", function () {
+    if (!mr) return; paused = !paused;
+    if (paused) { try { mr.pause(); } catch (e) {} pauseAt = performance.now(); } else { try { mr.resume(); } catch (e) {} pausedAcc += performance.now() - pauseAt; }
+    paint();
+  });
+  $("tpStop").addEventListener("click", function () {
+    tpRun = false; cancelAnimationFrame(raf); $("tp").style.display = "none";
+    if (mr && mr.state !== "inactive") { try { mr.stop(); } catch (e) {} }
+  });
+
+  /* ---------- Cleanup ---------- */
+  $("source").addEventListener("change", function () { $("fileRow").className = this.value === "file" ? "" : "hide"; });
+  $("afile").addEventListener("change", function () { if (this.files[0]) { $("aBefore").src = URL.createObjectURL(this.files[0]); } });
+
+  function writeWav(samples, sr) {
+    var n = samples.length, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+    function s(o, str) { for (var i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); }
+    s(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); s(8, "WAVE"); s(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); s(36, "data"); v.setUint32(40, n * 2, true);
+    for (var i = 0; i < n; i++) { var x = Math.max(-1, Math.min(1, samples[i])); v.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7FFF, true); }
+    return new Blob([buf], { type: "audio/wav" });
+  }
+  function toMono(ab) {
+    var ch = ab.numberOfChannels, n = ab.length, out = new Float32Array(n);
+    for (var c = 0; c < ch; c++) { var d = ab.getChannelData(c); for (var i = 0; i < n; i++) out[i] += d[i] / ch; }
+    return out;
+  }
+  function gate(x, sr, amount) {
+    var fl = Math.floor(sr * 0.02), nf = Math.floor(x.length / fl), rms = new Float32Array(nf), i, j;
+    for (i = 0; i < nf; i++) { var s = 0; for (j = 0; j < fl; j++) { var v = x[i * fl + j]; s += v * v; } rms[i] = Math.sqrt(s / fl); }
+    var sorted = Array.prototype.slice.call(rms).sort(function (a, b) { return a - b; });
+    var floor = sorted[Math.floor(nf * 0.12)] || 1e-5, peakish = sorted[Math.floor(nf * 0.9)] || 1e-3;
+    var thr = Math.min(floor * amount.k, peakish * 0.5), gmin = amount.g;
+    var g = 1, aA = Math.exp(-1 / (sr * 0.008)), aR = Math.exp(-1 / (sr * 0.18)), hold = 0, out = new Float32Array(x.length);
+    for (i = 0; i < nf; i++) {
+      var target = rms[i] > thr ? 1 : gmin; if (rms[i] > thr) hold = 6;
+      else if (hold > 0) { hold--; target = 1; }
+      for (j = 0; j < fl; j++) { var idx = i * fl + j; g = target > g ? target + (g - target) * aA : target + (g - target) * aR; out[idx] = x[idx] * g; }
+    }
+    for (i = nf * fl; i < x.length; i++) out[i] = x[i] * g;
+    return out;
+  }
+  function process(ab, level) {
+    var cfg = { light: { k: 2.2, g: 0.45 }, normal: { k: 2.8, g: 0.2 }, strong: { k: 3.6, g: 0.08 } }[level] || { k: 2.8, g: 0.2 };
+    var sr = ab.sampleRate, mono = toMono(ab);
+    var oc1 = new OfflineAudioContext(1, mono.length, sr), b = oc1.createBuffer(1, mono.length, sr); b.copyToChannel(mono, 0);
+    var src = oc1.createBufferSource(); src.buffer = b;
+    var hp = oc1.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 90; hp.Q.value = 0.7;
+    var hp2 = oc1.createBiquadFilter(); hp2.type = "highpass"; hp2.frequency.value = 90; hp2.Q.value = 0.7;
+    var lp = oc1.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = level === "strong" ? 7500 : 10500;
+    var pk = oc1.createBiquadFilter(); pk.type = "peaking"; pk.frequency.value = 3000; pk.gain.value = 2; pk.Q.value = 0.9;
+    src.connect(hp); hp.connect(hp2); hp2.connect(lp); lp.connect(pk); pk.connect(oc1.destination); src.start();
+    return oc1.startRendering().then(function (r1) {
+      var gated = gate(r1.getChannelData(0), sr, cfg);
+      var oc2 = new OfflineAudioContext(1, gated.length, sr), b2 = oc2.createBuffer(1, gated.length, sr); b2.copyToChannel(gated, 0);
+      var s2 = oc2.createBufferSource(); s2.buffer = b2;
+      var cp = oc2.createDynamicsCompressor(); cp.threshold.value = -26; cp.knee.value = 12; cp.ratio.value = 3.5; cp.attack.value = 0.006; cp.release.value = 0.16;
+      s2.connect(cp); cp.connect(oc2.destination); s2.start();
+      return oc2.startRendering();
+    }).then(function (r2) {
+      var d = r2.getChannelData(0), peak = 0, i;
+      for (i = 0; i < d.length; i++) { var a = Math.abs(d[i]); if (a > peak) peak = a; }
+      var gain = peak > 0 ? 0.89 / peak : 1, out = new Float32Array(d.length);
+      for (i = 0; i < d.length; i++) out[i] = d[i] * gain;
+      return writeWav(out, sr);
+    });
+  }
+  $("clean").addEventListener("click", function () {
+    var useFile = $("source").value === "file", blob = useFile ? $("afile").files[0] : rawBlob;
+    if (!blob) { $("cstat").className = "note warn"; $("cstat").textContent = t("noAudio"); return; }
+    $("clean").disabled = true; $("cstat").className = "note"; $("cstat").textContent = t("working"); $("res").className = "hide";
+    var AC = window.AudioContext || window.webkitAudioContext, ctx = new AC();
+    blob.arrayBuffer().then(function (ab) { return new Promise(function (res, rej) { ctx.decodeAudioData(ab, res, rej); }); })
+      .then(function (buf) { try { ctx.close(); } catch (e) {} return process(buf, $("level").value); })
+      .then(function (wav) {
+        var url = URL.createObjectURL(wav), d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; };
+        $("aAfter").src = url; $("dl").href = url; $("dl").download = "inside-report-voice-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + ".wav";
+        $("res").className = ""; $("cstat").textContent = t("done");
+      })
+      .catch(function () { $("cstat").className = "note warn"; $("cstat").textContent = t("decErr"); })
+      .then(function () { $("clean").disabled = false; });
+  });
+
+  $("lang").addEventListener("click", function () { lang = lang === "bn" ? "en" : "bn"; store("iir-lang", lang); paint(); });
+  $("thm").addEventListener("click", function () {
+    var d = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", d); store("iir-theme", d); paint();
+  });
+  document.documentElement.setAttribute("data-theme", store("iir-theme") === "light" ? "light" : "dark");
+  paint();
+})();
+</script>
+<script>
+(function(){ var standalone=(matchMedia("(display-mode: standalone)").matches)||navigator.standalone; if(!standalone||!/Android/i.test(navigator.userAgent))return;
+document.addEventListener("click",function(e){ var a=e.target.closest("a[href]"); if(!a)return; var u; try{u=new URL(a.href,location.href);}catch(x){return;}
+if(u.origin===location.origin||!/^https?:$/.test(u.protocol))return; e.preventDefault();
+location.href="intent://"+u.host+u.pathname+u.search+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(u.href)+";end"; },true); })();
+</script>
+</body>
+</html>
