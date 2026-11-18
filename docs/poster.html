@@ -63,6 +63,18 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
   </section>
 
   <section class="card">
+    <h2 id="sL"></h2>
+    <label class="btn primary" for="logo" id="lpick"></label>
+    <input type="file" id="logo" accept="image/*" class="hide">
+    <button type="button" id="lclr"></button>
+    <div class="row">
+      <div><label class="f" id="lLpos"></label><select id="lpos"></select></div>
+      <div><label class="f" id="lLsz"></label><input type="range" id="lsz" min="8" max="45" value="20"></div>
+    </div>
+    <div class="row"><div><label class="f" id="lLseal"></label><select id="sealon"></select></div></div>
+  </section>
+
+  <section class="card">
     <h2 id="s3"></h2>
     <div class="row">
       <div><label class="f" id="lp"></label><select id="preset"></select></div>
@@ -87,7 +99,9 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     bn: { back: "← নিউজ ডেস্ক", h1: "🖼️ পোস্টার মেকার", sub: "ছবি দিন, শিরোনাম লিখুন, প্রিসেট বাছুন। পোস্টার নিজে সেজে যাবে।",
       s1: "১. ছবি", pick: "📷 ছবি বেছে নিন", clr: "ছবি সরান", lz: "জুম", lx: "ডানে-বামে", ly: "ওপরে-নিচে", ld: "নিচের ছায়া (লেখা পরিষ্কার করতে)",
       s2: "২. লেখা", lt: "শিরোনাম", ls: "ছোট লাইন (ঐচ্ছিক)", lsrc: "সূত্র / তারিখ (ঐচ্ছিক)",
-      s3: "৩. ধরন", lp: "প্রিসেট", lstamp: "যাচাইয়ের ছাপ", lsz: "মাপ",
+      sL: "৩. আপনার লোগো", lpick: "🏷️ লোগো বেছে নিন", lclr: "লোগো সরান", lLpos: "লোগোর জায়গা", lLsz: "লোগোর মাপ", lLseal: "Inside Report-এর সিল",
+      lpos: { tr: "ওপরে ডানে", tl: "ওপরে বাঁয়ে", br: "নিচে ডানে", bl: "নিচে বাঁয়ে", mid: "মাঝখানে (ওয়াটারমার্ক)" }, seal: { on: "দেখান", off: "লুকান" },
+      s3: "৪. ধরন", lp: "প্রিসেট", lstamp: "যাচাইয়ের ছাপ", lsz: "মাপ",
       dl: "⬇ ছবি ডাউনলোড", share: "📤 শেয়ার", n: "ছাপ (✔ ✖ ⏳) আপনার নিজের যাচাইয়ের ফল। সব যাচাই শেষে দিন, প্রচারের আগে অন্তত দুটো সূত্রে মিলিয়ে নিন।",
       p: { inv: "🕵️ ইনভেস্টিগেশন", brk: "🔴 ব্রেকিং", fact: "✔ ফ্যাক্ট-চেক", news: "📰 সাধারণ খবর" },
       k: { inv: "ইনভেস্টিগেশন", brk: "ব্রেকিং", fact: "ফ্যাক্ট-চেক", news: "বিশেষ প্রতিবেদন" },
@@ -97,7 +111,9 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     en: { back: "← News desk", h1: "🖼️ Poster maker", sub: "Add an image, type a headline, pick a preset. The poster lays itself out.",
       s1: "1. Image", pick: "📷 Choose image", clr: "Remove image", lz: "Zoom", lx: "Left–right", ly: "Up–down", ld: "Bottom shade (for readable text)",
       s2: "2. Text", lt: "Headline", ls: "Sub-line (optional)", lsrc: "Source / date (optional)",
-      s3: "3. Style", lp: "Preset", lstamp: "Verification stamp", lsz: "Size",
+      sL: "3. Your logo", lpick: "🏷️ Choose logo", lclr: "Remove logo", lLpos: "Logo position", lLsz: "Logo size", lLseal: "Inside Report seal",
+      lpos: { tr: "Top right", tl: "Top left", br: "Bottom right", bl: "Bottom left", mid: "Centre (watermark)" }, seal: { on: "Show", off: "Hide" },
+      s3: "4. Style", lp: "Preset", lstamp: "Verification stamp", lsz: "Size",
       dl: "⬇ Download image", share: "📤 Share", n: "Stamps (✔ ✖ ⏳) are your own verification result. Apply only after checking, with at least two sources.",
       p: { inv: "🕵️ Investigation", brk: "🔴 Breaking", fact: "✔ Fact-check", news: "📰 News" },
       k: { inv: "INVESTIGATION", brk: "BREAKING", fact: "FACT-CHECK", news: "SPECIAL REPORT" },
@@ -118,8 +134,8 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
   }
   function paint() {
     document.documentElement.lang = lang;
-    ["back","h1","sub","s1","clr","lz","lx","ly","ld","s2","lt","ls","lsrc","s3","lp","lstamp","lsz","dl","share","n"].forEach(function (k) { $(k).textContent = t(k); });
-    $("pick").textContent = t("pick");
+    ["back","h1","sub","s1","clr","sL","lclr","lLpos","lLsz","lLseal","lz","lx","ly","ld","s2","lt","ls","lsrc","s3","lp","lstamp","lsz","dl","share","n"].forEach(function (k) { $(k).textContent = t(k); });
+    $("pick").textContent = t("pick"); $("lpick").textContent = t("lpick"); fill($("lpos"), t("lpos"), true); fill($("sealon"), t("seal"), true);
     fill($("preset"), t("p"), true); fill($("stamp"), t("st"), true); fill($("size"), t("sz"), true);
     $("title").placeholder = t("tit");
     $("lang").textContent = lang === "bn" ? "English" : "বাংলা";
@@ -138,6 +154,19 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
       if (cur) out.push(cur);
     });
     return out;
+  }
+  var logoImg = null;
+  function footerH0(H, s) { return 90 * s; }
+  function logoBox(W, H, s, fh) {
+    var pad = 54 * s, mw = W * ($("lsz").value / 100), r = logoImg.naturalHeight / logoImg.naturalWidth, w = mw, h = w * r;
+    if (h > H * 0.3) { h = H * 0.3; w = h / r; }
+    var pos = $("lpos").value, x, y;
+    if (pos === "tl") { x = pad; y = 30 * s + 112 * s * (W > H ? 0.7 : 1) + 24 * s; }
+    else if (pos === "bl") { x = pad; y = H - fh - h - 24 * s; }
+    else if (pos === "br") { x = W - pad - w; y = H - fh - h - 24 * s; }
+    else if (pos === "mid") { x = (W - w) / 2; y = (H - h) / 2; }
+    else { x = W - pad - w; y = 26 * s; }
+    return { x: x, y: y, w: w, h: h };
   }
   function draw() {
     var cv = $("cv"), preset = $("preset").value || "inv", sz = SIZES[$("size").value || "p45"];
@@ -163,11 +192,11 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     g.fillStyle = tg; g.fillRect(0, 0, W, 260 * s);
     // brand
     var bk = wide ? 0.7 : 1, pad = 54 * s, sy = 30 * s, ss = 112 * s * bk;
-    if (seal.complete && seal.naturalWidth) g.drawImage(seal, pad, sy, ss, ss);
-    g.textBaseline = "alphabetic"; g.fillStyle = "#fff"; g.font = "800 " + 34 * s * bk + "px " + FONT; g.fillText("THE INSIDE REPORT", pad + ss + 18 * s, sy + 52 * s * bk);
-    g.fillStyle = "#D2A53A"; g.fillText("BD", pad + ss + 18 * s, sy + 94 * s * bk);
+    var sealOn = $("sealon").value !== "off"; if (sealOn && seal.complete && seal.naturalWidth) g.drawImage(seal, pad, sy, ss, ss);
+    var tx0 = sealOn ? pad + ss + 18 * s : pad; g.textBaseline = "alphabetic"; g.fillStyle = "#fff"; g.font = "800 " + 34 * s * bk + "px " + FONT; g.fillText("THE INSIDE REPORT", tx0, sy + 52 * s * bk);
+    g.fillStyle = "#D2A53A"; g.fillText("BD", tx0, sy + 94 * s * bk);
     var src = $("src").value.trim();
-    if (src) { g.textAlign = "right"; g.fillStyle = "#E8D9A8"; g.font = "600 " + 26 * s + "px " + FONT; g.fillText(src, W - pad, sy + 68 * s * bk); g.textAlign = "left"; }
+    var lg = logoImg ? logoBox(W, H, s, footerH0(H, s)) : null; if (src) { g.textAlign = "right"; g.fillStyle = "#E8D9A8"; g.font = "600 " + 26 * s + "px " + FONT; g.fillText(src, W - pad, (lg && $("lpos").value === "tr") ? lg.y + lg.h + 40 * s : sy + 68 * s * bk); g.textAlign = "left"; }
     // breaking band
     if (preset === "brk") { g.fillStyle = "#D32F2F"; g.fillRect(0, sy + ss + 22 * s, W, 8 * s); }
     // text block (fit)
@@ -194,6 +223,11 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
       g.lineWidth = 10 * s; g.strokeStyle = col; g.strokeRect(-tw / 2, -th / 2, tw, th);
       g.fillStyle = col; g.textAlign = "center"; g.fillText(label, 0, 24 * s); g.restore(); g.textAlign = "left";
     }
+    // custom logo
+    if (logoImg) {
+      var lb = logoBox(W, H, s, footerH0(H, s));
+      g.save(); if ($("lpos").value === "mid") g.globalAlpha = 0.3; g.drawImage(logoImg, lb.x, lb.y, lb.w, lb.h); g.restore();
+    }
     // footer
     g.fillStyle = "#D2A53A"; g.fillRect(0, H - footerH, W, 6 * s);
     g.fillStyle = "rgba(4,20,58,0.92)"; g.fillRect(0, H - footerH + 6 * s, W, footerH - 6 * s);
@@ -201,11 +235,16 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     g.fillText("theinsidereportbd.blogspot.com  ·  YouTube @theinsidereportbd", W / 2, H - footerH / 2 + 18 * s); g.textAlign = "left";
   }
 
-  ["title","subt","src","zoom","px","py","dark","preset","stamp","size"].forEach(function (id) { $(id).addEventListener("input", draw); $(id).addEventListener("change", draw); });
+  ["title","subt","src","zoom","px","py","dark","preset","stamp","size","lpos","lsz","sealon"].forEach(function (id) { $(id).addEventListener("input", draw); $(id).addEventListener("change", draw); });
   $("img").addEventListener("change", function () {
     var f = this.files && this.files[0]; this.value = ""; if (!f) return;
     var im = new Image(); im.onload = function () { photo = im; draw(); }; im.src = URL.createObjectURL(f);
   });
+  $("logo").addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = ""; if (!f) return;
+    var im = new Image(); im.onload = function () { logoImg = im; draw(); }; im.src = URL.createObjectURL(f);
+  });
+  $("lclr").addEventListener("click", function () { logoImg = null; draw(); });
   $("clr").addEventListener("click", function () { photo = null; draw(); });
   function blob(cb) { $("cv").toBlob(cb, "image/png"); }
   $("dl").addEventListener("click", function () {

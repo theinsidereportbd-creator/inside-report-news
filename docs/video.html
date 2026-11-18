@@ -74,6 +74,11 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
       <div><label class="f" id="lmax"></label><select id="maxc"><option value="3">3</option><option value="5" selected>5</option><option value="8">8</option><option value="12">12</option></select></div>
       <div><label class="f" id="lkeep"></label><select id="keep"><option value="0"></option><option value="1"></option></select></div>
     </div>
+    <div class="row" style="margin-top:6px">
+      <div><label class="f" id="lLogo"></label><input type="file" id="logo" accept="image/*"></div>
+      <div><label class="f" id="lLpos"></label><select id="lpos"></select></div>
+      <div><label class="f" id="lLseal"></label><select id="sealon"></select></div>
+    </div>
     <div id="ownrow" class="hide"><label class="f" id="lown"></label><input type="file" id="own" accept="audio/*"></div>
     <div class="row" style="margin-top:10px"><button type="button" id="prevsnd"></button></div>
   </section>
@@ -103,7 +108,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
       back: "← নিউজ ডেস্ক", h1: "🎬 ভিডিও মেকার", sub: "ফুটেজ দিন, শিরোনাম লিখুন, প্রিসেট বাছুন। বাকিটা অ্যাপ করবে: ইন্ট্রো, শিরোনাম বার, সাসপেন্স সাউন্ড আর আউট্রো।",
       s1: "১. ফুটেজ", pick: "🎞️ ভিডিও / ছবি বেছে নিন", n1: "একসাথে অনেকগুলো বাছতে পারবেন। পরপর জুড়ে যাবে। নিজের তোলা বা ব্যবহারের অনুমতি আছে এমন ফুটেজই দিন।",
       s2: "২. লেখা", lt: "শিরোনাম", ls: "ছোট লাইন (ঐচ্ছিক)",
-      s3: "৩. ধরন ও সাউন্ড", lp: "প্রিসেট", lso: "সাউন্ড", lmax: "প্রতিটা ক্লিপ সর্বোচ্চ (সেকেন্ড)", lkeep: "ফুটেজের নিজের শব্দ",
+      s3: "৩. ধরন ও সাউন্ড", lp: "প্রিসেট", lso: "সাউন্ড", lLogo: "আপনার লোগো (ঐচ্ছিক)", lLpos: "লোগোর জায়গা", lLseal: "Inside Report-এর সিল", lpos: { tr: "ওপরে ডানে", tl: "ওপরে বাঁয়ে", br: "নিচে ডানে", bl: "নিচে বাঁয়ে", mid: "মাঝখানে (ওয়াটারমার্ক)" }, seal: { on: "দেখান", off: "লুকান" }, lmax: "প্রতিটা ক্লিপ সর্বোচ্চ (সেকেন্ড)", lkeep: "ফুটেজের নিজের শব্দ",
       keep0: "বাদ", keep1: "রাখুন", lown: "নিজের গান/অডিও ফাইল", prevsnd: "🔊 সাউন্ড শুনে দেখুন (৫ সেকেন্ড)",
       s4: "৪. তৈরি করুন", make: "▶ ভিডিও তৈরি করুন", n4: "ভিডিও তৈরির সময় পেজ বন্ধ করবেন না বা অন্য অ্যাপে যাবেন না। যত বড়, তত সময় লাগে।",
       dl: "⬇ ভিডিও ডাউনলোড", none: "আগে অন্তত একটা ভিডিও বা ছবি দিন।", working: "তৈরি হচ্ছে… পেজ খোলা রাখুন", done: "তৈরি হয়ে গেছে ✓ নিচে দেখুন ও ডাউনলোড করুন।",
@@ -117,7 +122,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
       back: "← News desk", h1: "🎬 Video maker", sub: "Add footage, type a headline, pick a preset. The app adds the intro, headline bar, suspense sound and outro.",
       s1: "1. Footage", pick: "🎞️ Choose videos / images", n1: "Pick several at once. They are joined in order. Use only footage you shot or have permission to use.",
       s2: "2. Text", lt: "Headline", ls: "Sub-line (optional)",
-      s3: "3. Style & sound", lp: "Preset", lso: "Sound", lmax: "Max per clip (seconds)", lkeep: "Original footage sound",
+      s3: "3. Style & sound", lp: "Preset", lso: "Sound", lLogo: "Your logo (optional)", lLpos: "Logo position", lLseal: "Inside Report seal", lpos: { tr: "Top right", tl: "Top left", br: "Bottom right", bl: "Bottom left", mid: "Centre (watermark)" }, seal: { on: "Show", off: "Hide" }, lmax: "Max per clip (seconds)", lkeep: "Original footage sound",
       keep0: "Off", keep1: "Keep", lown: "Your own music / audio file", prevsnd: "🔊 Preview sound (5 s)",
       s4: "4. Make it", make: "▶ Make video", n4: "Do not close the page or switch apps while it renders. Longer videos take longer.",
       dl: "⬇ Download video", none: "Add at least one video or image first.", working: "Rendering… keep this page open", done: "Done ✓ Watch below and download.",
@@ -142,10 +147,20 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     pairs.forEach(function (p) { var o = document.createElement("option"); o.value = p[0]; o.textContent = p[1]; sel.appendChild(o); });
     if (keep && cur) sel.value = cur;
   }
+  function fill2(sel, obj) {
+    var cur = sel.value; sel.textContent = "";
+    Object.keys(obj).forEach(function (k) { var o = document.createElement("option"); o.value = k; o.textContent = obj[k]; sel.appendChild(o); });
+    if (cur) sel.value = cur;
+  }
+  var logoImg = null;
+  $("logo").addEventListener("change", function () {
+    var f = this.files && this.files[0]; if (!f) { logoImg = null; return; }
+    var im = new Image(); im.onload = function () { logoImg = im; }; im.src = URL.createObjectURL(f);
+  });
   function paint() {
     document.documentElement.lang = lang;
     ["back","h1","sub","s1","n1","s2","s3","s4","make","n4","dl","prevsnd"].forEach(function (k) { $(k).textContent = t(k); });
-    $("pick").textContent = t("pick"); $("lt").textContent = t("lt"); $("ls").textContent = t("ls");
+    $("pick").textContent = t("pick"); $("lLogo").textContent = t("lLogo"); $("lLpos").textContent = t("lLpos"); $("lLseal").textContent = t("lLseal"); fill2($("lpos"), t("lpos")); fill2($("sealon"), t("seal")); $("lt").textContent = t("lt"); $("ls").textContent = t("ls");
     $("lp").textContent = t("lp"); $("lso").textContent = t("lso"); $("lmax").textContent = t("lmax"); $("lkeep").textContent = t("lkeep"); $("lown").textContent = t("lown");
     $("keep").options[0].textContent = t("keep0"); $("keep").options[1].textContent = t("keep1");
     fillSelect($("preset"), Object.keys(t("p")).map(function (k) { return [k, t("p")[k]]; }), true);
@@ -373,9 +388,17 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     var tg = g.createLinearGradient(0, 0, 0, 260); tg.addColorStop(0, "rgba(4,20,58,0.75)"); tg.addColorStop(1, "rgba(4,20,58,0)");
     g.fillStyle = tg; g.fillRect(0, 0, W, 260);
     // seal + brand
-    if (seal.complete && seal.naturalWidth) g.drawImage(seal, 28, 28, 84, 84);
-    g.fillStyle = "#fff"; g.font = "800 26px " + FONT; g.fillText("THE INSIDE REPORT", 126, 66);
-    g.fillStyle = "#D2A53A"; g.fillText("BD", 126, 98);
+    var sealOn = st.sealOn;
+    if (sealOn && seal.complete && seal.naturalWidth) g.drawImage(seal, 28, 28, 84, 84);
+    var bx = sealOn ? 126 : 30;
+    g.fillStyle = "#fff"; g.font = "800 26px " + FONT; g.fillText("THE INSIDE REPORT", bx, 66);
+    g.fillStyle = "#D2A53A"; g.fillText("BD", bx, 98);
+    if (logoImg) {
+      var lw = W * 0.2, lh = lw * logoImg.naturalHeight / logoImg.naturalWidth; if (lh > H * 0.18) { lh = H * 0.18; lw = lh * logoImg.naturalWidth / logoImg.naturalHeight; }
+      var lx = W - 30 - lw, ly = preset === "brk" ? 120 : 30, lp = st.lpos;
+      if (lp === "tl") { lx = 30; ly = 130; } else if (lp === "bl") { lx = 30; ly = H - 40 - lh; } else if (lp === "br") { lx = W - 30 - lw; ly = H - 40 - lh; } else if (lp === "mid") { lx = (W - lw) / 2; ly = (H - lh) / 2; }
+      g.save(); if (lp === "mid") g.globalAlpha = 0.3; g.drawImage(logoImg, lx, ly, lw, lh); g.restore();
+    }
     // breaking tag
     if (preset === "brk") {
       var pulse = 0.75 + 0.25 * Math.sin(tm * 6);
@@ -416,7 +439,7 @@ label.f { display:block; margin:10px 0 4px; font-size:14px; color:var(--muted); 
     busy = true; $("make").disabled = true; $("dl").className = "btn primary hide"; $("out").style.display = "none";
     var maxc = parseFloat($("maxc").value) || 5, keep = $("keep").value === "1";
     var preset = $("preset").value, soundKind = $("sound").value;
-    var st = { preset: preset, kicker: t("k")[preset], title: $("title").value.trim() || t("defTitle"), subt: $("subt").value.trim() };
+    var st = { sealOn: $("sealon").value !== "off", lpos: $("lpos").value, preset: preset, kicker: t("k")[preset], title: $("title").value.trim() || t("defTitle"), subt: $("subt").value.trim() };
 
     var segs = [{ type: "intro", dur: INTRO }];
     items.forEach(function (it) {
