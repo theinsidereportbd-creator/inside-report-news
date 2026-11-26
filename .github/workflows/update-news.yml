@@ -2,8 +2,8 @@ name: Update news
 
 on:
   schedule:
-    - cron: "*/20 * * * *"
-  workflow_dispatch: {}
+    - cron: "*/20 * * * *"   # every 20 minutes (GitHub may delay runs by a few minutes)
+  workflow_dispatch: {}        # lets you run it by hand from the Actions tab
 
 permissions:
   contents: write
@@ -33,7 +33,12 @@ jobs:
             git config user.email "news-desk-bot@users.noreply.github.com"
             git add docs/news.json
             git commit -m "Update headlines"
-            git push
+            # If someone else pushed while this job ran, pick up their work and try again.
+            for i in 1 2 3 4; do
+              git pull --rebase -X theirs origin main && git push && exit 0
+              sleep 5
+            done
+            echo "Could not push after 4 tries" && exit 1
           else
             echo "No changes."
           fi
